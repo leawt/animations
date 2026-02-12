@@ -6,7 +6,7 @@ A collection of HTML / TypeScript animations — diagrams, explainers, and small
 
 | Animation | Description |
 |-----------|-------------|
-| [GC (Identify → Verify → Execute)](gc-animation/) | Multi-stage SVG animation: manifest tree, blob storage, and garbage-collection flow. |
+| [Janitor animation (Identify → Verify → Execute)](janitor-animation/) | Multi-stage SVG animation: manifest tree, blob storage, and janitor (reclaim) flow. |
 
 ## Adding a new animation
 
