@@ -24,9 +24,16 @@
   }
 
   html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .scale-wrap {
     width: 1200px;
     height: 628px;
-    overflow: hidden;
+    transform-origin: top left;
+    position: absolute;
+    top: 0; left: 0;
   }
 
   body {
@@ -202,7 +209,7 @@
 </style>
 </head>
 <body>
-
+<div class="scale-wrap" id="scale-wrap">
 <div class="stage">
 
   <!-- Claude Code -->
@@ -217,11 +224,11 @@
         <span class="ps">$</span>
         <span class="typed-cmd" id="cmd1"></span><span class="cur cur-o" id="cur1"></span>
       </div>
-      <div class="out" id="o1a"><span class="chk">✓</span><span>Fetching plugin manifest</span></div>
-      <div class="out" id="o1b"><span class="chk">✓</span><span>Installing Pinecone plugin v1.2.0</span></div>
-      <div class="out" id="o1c"><span class="chk">✓</span><span>MCP server registered</span></div>
-      <div class="out" id="o1d"><span class="chk">✓</span><span>API key detected from env</span></div>
-      <div class="out" id="o1e"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
+      
+      <div class="out" id="o1a"><span class="chk">✓</span><span>Pinecone plugin ready</span></div>
+      <div class="out" id="o1b"><span class="chk">✓</span><span>MCP server active</span></div>
+      
+      <div class="out" id="o1c"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
       <div class="skills" id="sk1">
         <div class="sk"><span>·</span><span class="sk-name">quickstart</span><span class="sk-desc">create index, upload, search</span></div>
         <div class="sk"><span>·</span><span class="sk-name">query</span><span class="sk-desc">semantic search via MCP</span></div>
@@ -246,11 +253,11 @@
         <span class="ps">$</span>
         <span class="typed-cmd" id="cmd2"></span><span class="cur cur-b" id="cur2"></span>
       </div>
-      <div class="out" id="o2a"><span class="chk">✓</span><span>Cloning extension repo</span></div>
-      <div class="out" id="o2b"><span class="chk">✓</span><span>Installing Pinecone extension v1.2.0</span></div>
-      <div class="out" id="o2c"><span class="chk">✓</span><span>Registering MCP tools</span></div>
-      <div class="out" id="o2d"><span class="chk">✓</span><span>API key detected from env</span></div>
-      <div class="out" id="o2e"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
+      
+      <div class="out" id="o2a"><span class="chk">✓</span><span>Pinecone extension ready</span></div>
+      <div class="out" id="o2b"><span class="chk">✓</span><span>MCP server active</span></div>
+      
+      <div class="out" id="o2c"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
       <div class="skills" id="sk2">
         <div class="sk"><span>·</span><span class="sk-name">quickstart</span><span class="sk-desc">create index, upload, search</span></div>
         <div class="sk"><span>·</span><span class="sk-name">query</span><span class="sk-desc">semantic search via MCP</span></div>
@@ -275,11 +282,11 @@
         <span class="ps">$</span>
         <span class="typed-cmd" id="cmd3"></span><span class="cur cur-g" id="cur3"></span>
       </div>
-      <div class="out" id="o3a"><span class="chk">✓</span><span>Resolving package</span></div>
-      <div class="out" id="o3b"><span class="chk">✓</span><span>Installing base skills repo v1.2.0</span></div>
-      <div class="out" id="o3c"><span class="chk">✓</span><span>MCP server configured</span></div>
-      <div class="out" id="o3d"><span class="chk">✓</span><span>API key detected from env</span></div>
-      <div class="out" id="o3e"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
+      
+      <div class="out" id="o3a"><span class="chk">✓</span><span>Pinecone skills ready</span></div>
+      <div class="out" id="o3b"><span class="chk">✓</span><span>MCP server active</span></div>
+      
+      <div class="out" id="o3c"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
       <div class="skills" id="sk3">
         <div class="sk"><span>·</span><span class="sk-name">quickstart</span><span class="sk-desc">create index, upload, search</span></div>
         <div class="sk"><span>·</span><span class="sk-name">query</span><span class="sk-desc">semantic search via MCP</span></div>
@@ -297,24 +304,35 @@
 <div class="payoff" id="payoff"><span id="payoff-text"></span><span class="payoff-cur" id="payoff-cur"></span></div>
 
 <script>
+  function scaleToFit() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const scaleX = w / 1200;
+    const scaleY = h / 628;
+    const scale = Math.min(scaleX, scaleY);
+    document.getElementById("scale-wrap").style.transform = "scale(" + scale + ")";
+  }
+  scaleToFit();
+  window.addEventListener("resize", scaleToFit);
+
   const panels = [
     {
       cmdEl: document.getElementById('cmd1'), curEl: document.getElementById('cur1'),
       html:  `<span class="kw kw-o">claude</span> plugin install <span class="arg">pinecone</span>`,
       plain: 'claude plugin install pinecone',
-      outs:  ['o1a','o1b','o1c','o1d','o1e'], skills: 'sk1',
+      outs: ['o1a','o1b','o1c'], skills: 'sk1',
     },
     {
       cmdEl: document.getElementById('cmd2'), curEl: document.getElementById('cur2'),
       html:  `<span class="kw kw-b">gemini</span> extensions install <span class="arg">pinecone-io/ext</span>`,
       plain: 'gemini extensions install pinecone-io/ext',
-      outs:  ['o2a','o2b','o2c','o2d','o2e'], skills: 'sk2',
+      outs: ['o2a','o2b','o2c'], skills: 'sk2',
     },
     {
       cmdEl: document.getElementById('cmd3'), curEl: document.getElementById('cur3'),
       html:  `<span class="kw kw-g">npx</span> skills add <span class="arg">pinecone-io/skills</span>`,
       plain: 'npx skills add pinecone-io/skills',
-      outs:  ['o3a','o3b','o3c','o3d','o3e'], skills: 'sk3',
+      outs: ['o3a','o3b','o3c'], skills: 'sk3',
     },
   ];
 
@@ -362,7 +380,7 @@
   }, 450);
 
   function rollOutput() {
-    ['a','b','c','d','e'].forEach((_, i) => {
+    ['a','b','c'].forEach((_, i) => {
       setTimeout(() => {
         panels.forEach(p => {
           const el = document.getElementById(p.outs[i]);
@@ -372,7 +390,7 @@
     });
     setTimeout(() => {
       panels.forEach(p => { const el = document.getElementById(p.skills); if (el) el.style.opacity = '1'; });
-    }, 5 * OUT_STEP + 240);
+    }, 3 * OUT_STEP + 240);
     setTimeout(() => {
       const seg1 = 'same skills. ';
       const seg2 = ' any agent.';
@@ -389,8 +407,9 @@
         textEl.innerHTML = s1 + (s2 ? '<em>' + s2 + '</em>' : '');
         if (pi >= full.length) clearInterval(pt);
       }, 70);
-    }, 5 * OUT_STEP + 900);
+    }, 3 * OUT_STEP + 900);
   }
 </script>
+</div>
 </body>
 </html>
