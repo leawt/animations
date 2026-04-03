@@ -7,6 +7,7 @@ A collection of HTML / TypeScript animations — diagrams, explainers, and small
 | Animation | Description |
 |-----------|-------------|
 | [Janitor animation (Identify → Verify → Execute)](janitor-animation/) | Multi-stage SVG animation: manifest tree, blob storage, and janitor (reclaim) flow. |
+| [CLI animation](CLI/pc-plugin.html) | Claude Code plugin animation for the CLI product page. |
 
 ## Adding a new animation
 
