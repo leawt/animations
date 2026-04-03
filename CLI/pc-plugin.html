@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>pc plugin install</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #0b0b14;
+    --term-bg: #0e0e1a;
+    --border:  #232333;
+    --bar:     #111120;
+    --orange:  #e8622a;
+    --blue:    #4285f4;
+    --green:   #10a37f;
+    --check:   #4ec94e;
+    --dim:     #38385a;
+    --mid:     #64648a;
+    --text:    #b0b0c8;
+    --bright:  #eeeef5;
+  }
+
+  html, body {
+    width: 1200px;
+    height: 628px;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'IBM Plex Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 36px 28px;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 70% at 8%  55%, rgba(85,45,175,0.32), transparent),
+      radial-gradient(ellipse 50% 70% at 92% 55%, rgba(85,45,175,0.32), transparent),
+      radial-gradient(ellipse 40% 50% at 50% 100%, rgba(65,30,155,0.2), transparent);
+    pointer-events: none;
+  }
+
+  /* ── grid ── */
+  .stage {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── window ── */
+  .window {
+    background: var(--term-bg);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.55);
+  }
+
+  /* ── titlebar ── */
+  .titlebar {
+    background: var(--bar);
+    border-bottom: 1px solid var(--border);
+    padding: 9px 13px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .dots { display: flex; gap: 5px; }
+  .dot  { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .agent-name {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+
+  .name-orange { color: var(--orange); }
+  .name-blue   { color: var(--blue); }
+  .name-green  { color: var(--green); }
+
+  /* spacer mirrors dots width so name stays centered */
+  .spacer { width: 35px; }
+
+  /* ── terminal body ── */
+  .terminal {
+    padding: 14px 16px 16px;
+    font-size: 15px;
+    line-height: 1.72;
+    color: var(--text);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .prompt-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    min-height: 19px;
+  }
+
+  .ps { color: var(--dim); margin-right: 7px; flex-shrink: 0; }
+
+  .typed-cmd { white-space: nowrap; }
+  .kw        { font-weight: 600; }
+  .kw-o { color: var(--orange); }
+  .kw-b { color: var(--blue); }
+  .kw-g { color: var(--green); }
+  .arg  { color: #7aaeff; }
+
+  .cur {
+    display: inline-block;
+    width: 7px; height: 15px;
+    vertical-align: middle;
+    margin-left: 1px;
+    border-radius: 1px;
+    opacity: 0;
+    flex-shrink: 0;
+  }
+  .cur-o { background: var(--orange); }
+  .cur-b { background: var(--blue); }
+  .cur-g { background: var(--green); }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* output lines */
+  .out {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+  }
+  .chk { color: var(--check); flex-shrink: 0; }
+  .out strong { color: var(--bright); }
+
+  /* skill list */
+  .skills {
+    margin-top: 6px;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+  .sk {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--dim);
+  }
+  .sk-name { color: var(--mid);  min-width: 82px; }
+  .sk-desc { color: var(--dim);  font-size: 10px; }
+
+  /* payoff */
+  .payoff {
+    margin-top: 20px;
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    color: var(--mid);
+    text-align: center;
+    opacity: 1;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    min-height: 20px;
+  }
+  .payoff em { color: var(--text); font-style: normal; }
+  .payoff-cur {
+    display: inline-block;
+    width: 8px; height: 16px;
+    background: var(--mid);
+    border-radius: 1px;
+    vertical-align: middle;
+    margin-left: 2px;
+    opacity: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- Claude Code -->
+  <div class="window">
+    <div class="titlebar">
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <div class="agent-name name-orange">Claude Code</div>
+      <div class="spacer"></div>
+    </div>
+    <div class="terminal">
+      <div class="prompt-line">
+        <span class="ps">$</span>
+        <span class="typed-cmd" id="cmd1"></span><span class="cur cur-o" id="cur1"></span>
+      </div>
+      <div class="out" id="o1a"><span class="chk">✓</span><span>Fetching plugin manifest</span></div>
+      <div class="out" id="o1b"><span class="chk">✓</span><span>Installing Pinecone plugin v1.2.0</span></div>
+      <div class="out" id="o1c"><span class="chk">✓</span><span>MCP server registered</span></div>
+      <div class="out" id="o1d"><span class="chk">✓</span><span>API key detected from env</span></div>
+      <div class="out" id="o1e"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
+      <div class="skills" id="sk1">
+        <div class="sk"><span>·</span><span class="sk-name">quickstart</span><span class="sk-desc">create index, upload, search</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">query</span><span class="sk-desc">semantic search via MCP</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">assistant</span><span class="sk-desc">doc Q&amp;A with Assistants</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">cli</span><span class="sk-desc">index + vector management</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">mcp</span><span class="sk-desc">MCP server reference</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">pinecone-docs</span><span class="sk-desc">official docs by topic</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">help</span><span class="sk-desc">all skills at a glance</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gemini CLI -->
+  <div class="window">
+    <div class="titlebar">
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <div class="agent-name name-blue">Gemini CLI</div>
+      <div class="spacer"></div>
+    </div>
+    <div class="terminal">
+      <div class="prompt-line">
+        <span class="ps">$</span>
+        <span class="typed-cmd" id="cmd2"></span><span class="cur cur-b" id="cur2"></span>
+      </div>
+      <div class="out" id="o2a"><span class="chk">✓</span><span>Cloning extension repo</span></div>
+      <div class="out" id="o2b"><span class="chk">✓</span><span>Installing Pinecone extension v1.2.0</span></div>
+      <div class="out" id="o2c"><span class="chk">✓</span><span>Registering MCP tools</span></div>
+      <div class="out" id="o2d"><span class="chk">✓</span><span>API key detected from env</span></div>
+      <div class="out" id="o2e"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
+      <div class="skills" id="sk2">
+        <div class="sk"><span>·</span><span class="sk-name">quickstart</span><span class="sk-desc">create index, upload, search</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">query</span><span class="sk-desc">semantic search via MCP</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">assistant</span><span class="sk-desc">doc Q&amp;A with Assistants</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">cli</span><span class="sk-desc">index + vector management</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">mcp</span><span class="sk-desc">MCP server reference</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">pinecone-docs</span><span class="sk-desc">official docs by topic</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">help</span><span class="sk-desc">all skills at a glance</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cursor · Copilot · Codex -->
+  <div class="window">
+    <div class="titlebar">
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+      <div class="agent-name name-green">Cursor · Copilot · Codex</div>
+      <div class="spacer"></div>
+    </div>
+    <div class="terminal">
+      <div class="prompt-line">
+        <span class="ps">$</span>
+        <span class="typed-cmd" id="cmd3"></span><span class="cur cur-g" id="cur3"></span>
+      </div>
+      <div class="out" id="o3a"><span class="chk">✓</span><span>Resolving package</span></div>
+      <div class="out" id="o3b"><span class="chk">✓</span><span>Installing base skills repo v1.2.0</span></div>
+      <div class="out" id="o3c"><span class="chk">✓</span><span>MCP server configured</span></div>
+      <div class="out" id="o3d"><span class="chk">✓</span><span>API key detected from env</span></div>
+      <div class="out" id="o3e"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
+      <div class="skills" id="sk3">
+        <div class="sk"><span>·</span><span class="sk-name">quickstart</span><span class="sk-desc">create index, upload, search</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">query</span><span class="sk-desc">semantic search via MCP</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">assistant</span><span class="sk-desc">doc Q&amp;A with Assistants</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">cli</span><span class="sk-desc">index + vector management</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">mcp</span><span class="sk-desc">MCP server reference</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">pinecone-docs</span><span class="sk-desc">official docs by topic</span></div>
+        <div class="sk"><span>·</span><span class="sk-name">help</span><span class="sk-desc">all skills at a glance</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="payoff" id="payoff"><span id="payoff-text"></span><span class="payoff-cur" id="payoff-cur"></span></div>
+
+<script>
+  const panels = [
+    {
+      cmdEl: document.getElementById('cmd1'), curEl: document.getElementById('cur1'),
+      html:  `<span class="kw kw-o">claude</span> plugin install <span class="arg">pinecone</span>`,
+      plain: 'claude plugin install pinecone',
+      outs:  ['o1a','o1b','o1c','o1d','o1e'], skills: 'sk1',
+    },
+    {
+      cmdEl: document.getElementById('cmd2'), curEl: document.getElementById('cur2'),
+      html:  `<span class="kw kw-b">gemini</span> extensions install <span class="arg">pinecone-io/ext</span>`,
+      plain: 'gemini extensions install pinecone-io/ext',
+      outs:  ['o2a','o2b','o2c','o2d','o2e'], skills: 'sk2',
+    },
+    {
+      cmdEl: document.getElementById('cmd3'), curEl: document.getElementById('cur3'),
+      html:  `<span class="kw kw-g">npx</span> skills add <span class="arg">pinecone-io/skills</span>`,
+      plain: 'npx skills add pinecone-io/skills',
+      outs:  ['o3a','o3b','o3c','o3d','o3e'], skills: 'sk3',
+    },
+  ];
+
+  function revealHtml(htmlStr, n) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = htmlStr;
+    let rem = n;
+    function walk(node) {
+      if (rem <= 0) { node.parentNode && node.parentNode.removeChild(node); return; }
+      if (node.nodeType === 3) {
+        if (node.textContent.length <= rem) rem -= node.textContent.length;
+        else { node.textContent = node.textContent.slice(0, rem); rem = 0; }
+      } else { Array.from(node.childNodes).forEach(walk); }
+    }
+    walk(tmp);
+    return tmp.innerHTML;
+  }
+
+  const CHAR_MS  = 72;
+  const OUT_STEP = 480;
+  const maxLen   = Math.max(...panels.map(p => p.plain.length));
+
+  // Cursors on immediately
+  panels.forEach(p => {
+    p.curEl.style.opacity  = '1';
+    p.curEl.style.animation = 'blink 0.9s step-end infinite';
+  });
+
+  // Start typing after brief pause
+  let charIdx = 0;
+  setTimeout(() => {
+    const t = setInterval(() => {
+      charIdx++;
+      panels.forEach(p => {
+        p.cmdEl.innerHTML = revealHtml(p.html, Math.min(charIdx, p.plain.length));
+      });
+      if (charIdx >= maxLen) {
+        clearInterval(t);
+        setTimeout(() => {
+          panels.forEach(p => { p.curEl.style.animation = 'none'; p.curEl.style.opacity = '0'; });
+          rollOutput();
+        }, 260);
+      }
+    }, CHAR_MS);
+  }, 450);
+
+  function rollOutput() {
+    ['a','b','c','d','e'].forEach((_, i) => {
+      setTimeout(() => {
+        panels.forEach(p => {
+          const el = document.getElementById(p.outs[i]);
+          if (el) el.style.opacity = '1';
+        });
+      }, i * OUT_STEP);
+    });
+    setTimeout(() => {
+      panels.forEach(p => { const el = document.getElementById(p.skills); if (el) el.style.opacity = '1'; });
+    }, 5 * OUT_STEP + 240);
+    setTimeout(() => {
+      const seg1 = 'same skills. ';
+      const seg2 = ' any agent.';
+      const full  = seg1 + seg2;
+      const textEl = document.getElementById('payoff-text');
+      const curEl  = document.getElementById('payoff-cur');
+      curEl.style.opacity = '1';
+      curEl.style.animation = 'blink 0.9s step-end infinite';
+      let pi = 0;
+      const pt = setInterval(() => {
+        pi++;
+        const s1 = full.slice(0, Math.min(pi, seg1.length));
+        const s2 = pi > seg1.length ? full.slice(seg1.length, pi) : '';
+        textEl.innerHTML = s1 + (s2 ? '<em>' + s2 + '</em>' : '');
+        if (pi >= full.length) clearInterval(pt);
+      }, 70);
+    }, 5 * OUT_STEP + 900);
+  }
+</script>
+</body>
+</html>
