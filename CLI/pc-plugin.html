@@ -24,9 +24,11 @@
   }
 
   html, body {
-    width: 100%;
+    width: 1200px;
+    height: 628px;
     overflow: hidden;
   }
+
   body {
     background: var(--bg);
     font-family: 'IBM Plex Mono', monospace;
@@ -34,7 +36,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 24px 24px 20px;
+    padding: 32px 36px 28px;
     position: relative;
   }
 
@@ -53,7 +55,7 @@
   .stage {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
     position: relative;
     z-index: 1;
@@ -89,7 +91,7 @@
   .agent-name {
     flex: 1;
     text-align: center;
-    font-size: clamp(9px, 1.15vw, 12px);
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.06em;
   }
@@ -104,7 +106,7 @@
   /* ── terminal body ── */
   .terminal {
     padding: 14px 16px 16px;
-    font-size: clamp(11px, 1.5vw, 15px);
+    font-size: 15px;
     line-height: 1.72;
     color: var(--text);
     flex: 1;
@@ -164,17 +166,17 @@
     display: flex;
     align-items: baseline;
     gap: 7px;
-    font-size: clamp(8px, 1.1vw, 11px);
+    font-size: 11px;
     line-height: 1.8;
     color: var(--dim);
   }
   .sk-name { color: var(--mid);  min-width: 82px; }
-  .sk-desc { color: var(--dim);  font-size: clamp(7px, 0.95vw, 10px); }
+  .sk-desc { color: var(--dim);  font-size: 10px; }
 
   /* payoff */
   .payoff {
     margin-top: 20px;
-    font-size: clamp(11px, 1.5vw, 15px);
+    font-size: 15px;
     letter-spacing: 0.14em;
     color: var(--mid);
     text-align: center;
@@ -200,6 +202,7 @@
 </style>
 </head>
 <body>
+
 <div class="stage">
 
   <!-- Claude Code -->
@@ -214,10 +217,8 @@
         <span class="ps">$</span>
         <span class="typed-cmd" id="cmd1"></span><span class="cur cur-o" id="cur1"></span>
       </div>
-
       <div class="out" id="o1a"><span class="chk">✓</span><span>Pinecone plugin ready</span></div>
       <div class="out" id="o1b"><span class="chk">✓</span><span>MCP server active</span></div>
-
       <div class="out" id="o1c"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
       <div class="skills" id="sk1">
         <div class="sk"><span>·</span><span class="sk-name">quickstart</span><span class="sk-desc">create index, upload, search</span></div>
@@ -243,10 +244,8 @@
         <span class="ps">$</span>
         <span class="typed-cmd" id="cmd2"></span><span class="cur cur-b" id="cur2"></span>
       </div>
-
       <div class="out" id="o2a"><span class="chk">✓</span><span>Pinecone extension ready</span></div>
       <div class="out" id="o2b"><span class="chk">✓</span><span>MCP server active</span></div>
-
       <div class="out" id="o2c"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
       <div class="skills" id="sk2">
         <div class="sk"><span>·</span><span class="sk-name">quickstart</span><span class="sk-desc">create index, upload, search</span></div>
@@ -272,10 +271,8 @@
         <span class="ps">$</span>
         <span class="typed-cmd" id="cmd3"></span><span class="cur cur-g" id="cur3"></span>
       </div>
-
       <div class="out" id="o3a"><span class="chk">✓</span><span>Pinecone skills ready</span></div>
       <div class="out" id="o3b"><span class="chk">✓</span><span>MCP server active</span></div>
-
       <div class="out" id="o3c"><span class="chk">✓</span><span><strong>7 skills available</strong></span></div>
       <div class="skills" id="sk3">
         <div class="sk"><span>·</span><span class="sk-name">quickstart</span><span class="sk-desc">create index, upload, search</span></div>
@@ -294,25 +291,24 @@
 <div class="payoff" id="payoff"><span id="payoff-text"></span><span class="payoff-cur" id="payoff-cur"></span></div>
 
 <script>
-
   const panels = [
     {
       cmdEl: document.getElementById('cmd1'), curEl: document.getElementById('cur1'),
       html:  `<span class="kw kw-o">claude</span> plugin install <span class="arg">pinecone</span>`,
       plain: 'claude plugin install pinecone',
-      outs: ['o1a','o1b','o1c'], skills: 'sk1',
+      outs:  ['o1a','o1b','o1c'], skills: 'sk1',
     },
     {
       cmdEl: document.getElementById('cmd2'), curEl: document.getElementById('cur2'),
       html:  `<span class="kw kw-b">gemini</span> extensions install <span class="arg">pinecone-io/ext</span>`,
       plain: 'gemini extensions install pinecone-io/ext',
-      outs: ['o2a','o2b','o2c'], skills: 'sk2',
+      outs:  ['o2a','o2b','o2c'], skills: 'sk2',
     },
     {
       cmdEl: document.getElementById('cmd3'), curEl: document.getElementById('cur3'),
       html:  `<span class="kw kw-g">npx</span> skills add <span class="arg">pinecone-io/skills</span>`,
       plain: 'npx skills add pinecone-io/skills',
-      outs: ['o3a','o3b','o3c'], skills: 'sk3',
+      outs:  ['o3a','o3b','o3c'], skills: 'sk3',
     },
   ];
 
