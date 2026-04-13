@@ -14,11 +14,12 @@
     font-weight: 700;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #171717; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'JetBrains Mono', monospace; }
-  .wrap { position: relative; width: 700px; }
-  .stage { position: absolute; top: 0; left: 0; width: 700px; height: 580px; opacity: 0; transition: opacity 0.6s ease; pointer-events: none; }
+  body { background: #171717; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: 'JetBrains Mono', monospace; }
+  .wrap { position: relative; width: 800px; }
+  .stage { position: absolute; top: 0; left: 0; width: 800px; height: 600px; opacity: 0; transition: opacity 0.6s ease; pointer-events: none; }
   .stage.active { opacity: 1; pointer-events: auto; }
-  .controls { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; margin-top: 582px; padding: 0 0 8px 0; }
+  .spacer { height: 600px; width: 800px; display: block; }
+  .controls { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 800px; padding: 10px 0 8px 0; }
   .controls-buttons { display: flex; align-items: center; justify-content: center; gap: 12px; }
   .controls button { background: #1C1C1C; border: 1px solid #404040; color: #A3A3A3; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 6px 14px; border-radius: 4px; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
   .controls button:hover { border-color: #0B80FF; color: #F5F5F5; }
@@ -31,312 +32,314 @@
 <body>
 <div class="wrap">
 
-<svg class="stage active" data-i="0" width="700" height="580" viewBox="0 0 700 580" xmlns="http://www.w3.org/2000/svg">
-  <rect width="700" height="580" fill="#171717"/>
-  <defs><filter id="g0"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-  <text x="350" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
-  <text x="293" y="42" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">INCOMING REQUEST</text>
-  <text x="343" y="58" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">│</text>
-  <text x="343" y="74" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">▼</text>
-  <text x="249" y="90" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">┌──────────────────────────┐</text>
-  <text x="249" y="106" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│    SAMPLE 2 BACKENDS     │</text>
-  <text x="249" y="122" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│   AT RANDOM FROM POOL    │</text>
-  <text x="249" y="138" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">└────────┬────────┬────────┘</text>
-  <text x="314" y="154" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│        │</text>
-  <text x="264" y="170" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">┌──────▼──┐  </text>
-  <text x="357" y="170" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">┌──▼──────┐</text>
-  <text x="264" y="186" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">│BACKEND A│  </text>
-  <text x="357" y="186" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">│BACKEND B│</text>
-  <text x="264" y="202" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">│score=0.9│  </text>
-  <text x="357" y="202" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">│score=0.5│</text>
-  <text x="264" y="218" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">└──────┬──┘  </text>
-  <text x="357" y="218" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">└─────────┘</text>
-  <text x="314" y="234" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g0)">│</text>
-  <text x="314" y="250" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g0)">│  (higher score wins)</text>
-  <text x="314" y="266" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g0)">▼</text>
-  <text x="249" y="282" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">┌──────────────────────────┐</text>
-  <text x="249" y="298" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│       SEND REQUEST       │</text>
-  <text x="249" y="314" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">└────────────┬─────────────┘</text>
-  <text x="343" y="330" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">│</text>
-  <text x="343" y="346" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">▼</text>
-  <text x="249" y="362" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">┌──────────────────────────┐</text>
-  <text x="249" y="378" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│    UPDATE HEALTH AND     │</text>
-  <text x="249" y="394" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│    PERFORMANCE STATS     │</text>
-  <text x="249" y="410" font-family="JetBrains Mono" font-size="12" fill="#A3A3A3" filter="url(#g0)">└──────────────────────────┘</text>
-  <text x="350" y="438" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool (n backends, 2 sampled per request)</text>
-  <circle cx="218" cy="462" r="12" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
-  <text x="218" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#A3A3A3">B1</text>
-  <circle cx="254" cy="462" r="12" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
-  <text x="254" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#A3A3A3">B2</text>
-  <circle cx="290" cy="462" r="12" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
-  <text x="290" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#A3A3A3">B3</text>
-  <circle cx="326" cy="462" r="12" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
-  <text x="326" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#A3A3A3">B4</text>
-  <circle cx="362" cy="462" r="12" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
-  <text x="362" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#A3A3A3">B5</text>
-  <circle cx="398" cy="462" r="12" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
-  <text x="398" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#A3A3A3">B6</text>
-  <circle cx="434" cy="462" r="12" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
-  <text x="434" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#A3A3A3">B7</text>
-  <text x="350" y="502" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">sample two, pick the better one — no global state, no coordination</text>
-  <text x="350" y="555" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3">OVERVIEW</text>
+<svg class="stage active" data-i="0" width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#171717"/>
+  <defs><filter id="g0"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <text x="400" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
+  <text x="337" y="40" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">INCOMING REQUEST</text>
+  <text x="392" y="58" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">│</text>
+  <text x="392" y="76" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">▼</text>
+  <text x="291" y="94" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">┌──────────────────────────┐</text>
+  <text x="291" y="112" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│    SAMPLE 2 BACKENDS     │</text>
+  <text x="291" y="130" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│   AT RANDOM FROM POOL    │</text>
+  <text x="291" y="148" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">└────────┬────────┬────────┘</text>
+  <text x="361" y="166" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│        │</text>
+  <text x="306" y="184" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">┌──────▼──┐  </text>
+  <text x="408" y="184" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">┌──▼──────┐</text>
+  <text x="306" y="202" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│BACKEND A│  </text>
+  <text x="408" y="202" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">│BACKEND B│</text>
+  <text x="306" y="220" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│score=0.9│  </text>
+  <text x="408" y="220" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">│score=0.5│</text>
+  <text x="306" y="238" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">└──────┬──┘  </text>
+  <text x="408" y="238" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">└─────────┘</text>
+  <text x="361" y="256" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g0)">│</text>
+  <text x="361" y="274" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g0)">│  (higher score wins)</text>
+  <text x="361" y="292" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g0)">▼</text>
+  <text x="291" y="310" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">┌──────────────────────────┐</text>
+  <text x="291" y="328" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│       SEND REQUEST       │</text>
+  <text x="291" y="346" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">└────────────┬─────────────┘</text>
+  <text x="392" y="364" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">│</text>
+  <text x="392" y="382" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">▼</text>
+  <text x="291" y="400" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">┌──────────────────────────┐</text>
+  <text x="291" y="418" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│    UPDATE HEALTH AND     │</text>
+  <text x="291" y="436" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" xml:space="preserve" filter="url(#g0)">│    PERFORMANCE STATS     │</text>
+  <text x="291" y="454" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3" filter="url(#g0)">└──────────────────────────┘</text>
+  <text x="400" y="476" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">sample two, pick the better one — no global state, no coordination</text>
+  <text x="400" y="500" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool</text>
+  <circle cx="268" cy="524" r="13" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
+  <text x="268" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">B1</text>
+  <circle cx="312" cy="524" r="13" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
+  <text x="312" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">B2</text>
+  <circle cx="356" cy="524" r="13" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
+  <text x="356" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">B3</text>
+  <circle cx="400" cy="524" r="13" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
+  <text x="400" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">B4</text>
+  <circle cx="444" cy="524" r="13" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
+  <text x="444" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">B5</text>
+  <circle cx="488" cy="524" r="13" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
+  <text x="488" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">B6</text>
+  <circle cx="532" cy="524" r="13" fill="#1C1C1C" stroke="#A3A3A3" stroke-width="1.5"/>
+  <text x="532" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">B7</text>
+  <text x="400" y="578" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#A3A3A3">OVERVIEW</text>
 </svg>
 
-<svg class="stage" data-i="1" width="700" height="580" viewBox="0 0 700 580" xmlns="http://www.w3.org/2000/svg">
-  <rect width="700" height="580" fill="#171717"/>
-  <defs><filter id="g1"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-  <text x="350" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
-  <text x="293" y="42" font-family="JetBrains Mono" font-size="12" fill="#F5F5F5" filter="url(#g1)">INCOMING REQUEST</text>
-  <text x="343" y="58" font-family="JetBrains Mono" font-size="12" fill="#F5F5F5" filter="url(#g1)">│</text>
-  <text x="343" y="74" font-family="JetBrains Mono" font-size="12" fill="#F5F5F5" filter="url(#g1)">▼</text>
-  <text x="249" y="90" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──────────────────────────┐</text>
-  <text x="249" y="106" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│    SAMPLE 2 BACKENDS     │</text>
-  <text x="249" y="122" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│   AT RANDOM FROM POOL    │</text>
-  <text x="249" y="138" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└────────┬────────┬────────┘</text>
-  <text x="314" y="154" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│        │</text>
-  <text x="264" y="170" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──────▼──┐  </text>
-  <text x="357" y="170" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──▼──────┐</text>
-  <text x="264" y="186" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│BACKEND A│  </text>
-  <text x="357" y="186" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│BACKEND B│</text>
-  <text x="264" y="202" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│score=0.9│  </text>
-  <text x="357" y="202" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│score=0.5│</text>
-  <text x="264" y="218" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└──────┬──┘  </text>
-  <text x="357" y="218" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└─────────┘</text>
-  <text x="314" y="234" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│</text>
-  <text x="314" y="250" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│  (higher score wins)</text>
-  <text x="314" y="266" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">▼</text>
-  <text x="249" y="282" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──────────────────────────┐</text>
-  <text x="249" y="298" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│       SEND REQUEST       │</text>
-  <text x="249" y="314" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└────────────┬─────────────┘</text>
-  <text x="343" y="330" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│</text>
-  <text x="343" y="346" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">▼</text>
-  <text x="249" y="362" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──────────────────────────┐</text>
-  <text x="249" y="378" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│    UPDATE HEALTH AND     │</text>
-  <text x="249" y="394" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│    PERFORMANCE STATS     │</text>
-  <text x="249" y="410" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└──────────────────────────┘</text>
-  <text x="350" y="438" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool (n backends, 2 sampled per request)</text>
-  <circle cx="218" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="218" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B1</text>
-  <circle cx="254" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="254" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B2</text>
-  <circle cx="290" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="290" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B3</text>
-  <circle cx="326" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="326" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B4</text>
-  <circle cx="362" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="362" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B5</text>
-  <circle cx="398" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="398" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B6</text>
-  <circle cx="434" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="434" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B7</text>
-  <text x="350" y="502" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">a request arrives — every request is also a routing decision</text>
-  <text x="350" y="555" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">RECEIVE</text>
+<svg class="stage" data-i="1" width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#171717"/>
+  <defs><filter id="g1"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <text x="400" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
+  <text x="337" y="40" font-family="JetBrains Mono" font-size="13" fill="#F5F5F5" filter="url(#g1)">INCOMING REQUEST</text>
+  <text x="392" y="58" font-family="JetBrains Mono" font-size="13" fill="#F5F5F5" filter="url(#g1)">│</text>
+  <text x="392" y="76" font-family="JetBrains Mono" font-size="13" fill="#F5F5F5" filter="url(#g1)">▼</text>
+  <text x="291" y="94" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──────────────────────────┐</text>
+  <text x="291" y="112" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│    SAMPLE 2 BACKENDS     │</text>
+  <text x="291" y="130" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│   AT RANDOM FROM POOL    │</text>
+  <text x="291" y="148" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└────────┬────────┬────────┘</text>
+  <text x="361" y="166" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│        │</text>
+  <text x="306" y="184" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">┌──────▼──┐  </text>
+  <text x="408" y="184" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──▼──────┐</text>
+  <text x="306" y="202" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│BACKEND A│  </text>
+  <text x="408" y="202" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│BACKEND B│</text>
+  <text x="306" y="220" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│score=0.9│  </text>
+  <text x="408" y="220" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│score=0.5│</text>
+  <text x="306" y="238" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">└──────┬──┘  </text>
+  <text x="408" y="238" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└─────────┘</text>
+  <text x="361" y="256" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│</text>
+  <text x="361" y="274" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│  (higher score wins)</text>
+  <text x="361" y="292" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">▼</text>
+  <text x="291" y="310" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──────────────────────────┐</text>
+  <text x="291" y="328" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│       SEND REQUEST       │</text>
+  <text x="291" y="346" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└────────────┬─────────────┘</text>
+  <text x="392" y="364" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│</text>
+  <text x="392" y="382" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">▼</text>
+  <text x="291" y="400" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──────────────────────────┐</text>
+  <text x="291" y="418" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│    UPDATE HEALTH AND     │</text>
+  <text x="291" y="436" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│    PERFORMANCE STATS     │</text>
+  <text x="291" y="454" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└──────────────────────────┘</text>
+  <text x="400" y="476" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">a request arrives — every request is also a routing decision</text>
+  <text x="400" y="500" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool</text>
+  <circle cx="268" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="268" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B1</text>
+  <circle cx="312" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="312" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B2</text>
+  <circle cx="356" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="356" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B3</text>
+  <circle cx="400" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="400" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B4</text>
+  <circle cx="444" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="444" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B5</text>
+  <circle cx="488" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="488" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B6</text>
+  <circle cx="532" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="532" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B7</text>
+  <text x="400" y="578" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">RECEIVE</text>
 </svg>
 
-<svg class="stage" data-i="2" width="700" height="580" viewBox="0 0 700 580" xmlns="http://www.w3.org/2000/svg">
-  <rect width="700" height="580" fill="#171717"/>
-  <defs><filter id="g2"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-  <text x="350" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
-  <text x="293" y="42" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g2)">INCOMING REQUEST</text>
-  <text x="343" y="58" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g2)">│</text>
-  <text x="343" y="74" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g2)">▼</text>
-  <text x="249" y="90" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">┌──────────────────────────┐</text>
-  <text x="249" y="106" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">│    SAMPLE 2 BACKENDS     │</text>
-  <text x="249" y="122" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">│   AT RANDOM FROM POOL    │</text>
-  <text x="249" y="138" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">└────────┬────────┬────────┘</text>
-  <text x="314" y="154" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">│        │</text>
-  <text x="264" y="170" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">┌──────▼──┐  </text>
-  <text x="357" y="170" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">┌──▼──────┐</text>
-  <text x="264" y="186" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">│BACKEND A│  </text>
-  <text x="357" y="186" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">│BACKEND B│</text>
-  <text x="264" y="202" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">│score=0.9│  </text>
-  <text x="357" y="202" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">│score=0.5│</text>
-  <text x="264" y="218" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">└──────┬──┘  </text>
-  <text x="357" y="218" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g2)">└─────────┘</text>
-  <text x="314" y="234" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│</text>
-  <text x="314" y="250" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│  (higher score wins)</text>
-  <text x="314" y="266" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">▼</text>
-  <text x="249" y="282" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──────────────────────────┐</text>
-  <text x="249" y="298" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│       SEND REQUEST       │</text>
-  <text x="249" y="314" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└────────────┬─────────────┘</text>
-  <text x="343" y="330" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│</text>
-  <text x="343" y="346" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">▼</text>
-  <text x="249" y="362" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──────────────────────────┐</text>
-  <text x="249" y="378" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│    UPDATE HEALTH AND     │</text>
-  <text x="249" y="394" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│    PERFORMANCE STATS     │</text>
-  <text x="249" y="410" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└──────────────────────────┘</text>
-  <text x="350" y="438" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">backend pool (n backends, 2 sampled per request)</text>
-  <circle cx="218" cy="462" r="12" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g2)"/>
-  <text x="218" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#0B80FF">B1</text>
-  <circle cx="254" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="254" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B2</text>
-  <circle cx="290" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="290" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B3</text>
-  <circle cx="326" cy="462" r="12" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g2)"/>
-  <text x="326" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#0B80FF">B4</text>
-  <circle cx="362" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="362" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B5</text>
-  <circle cx="398" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="398" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B6</text>
-  <circle cx="434" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="434" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B7</text>
-  <text x="350" y="502" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">two backends picked at random — no ranking, no coordination</text>
-  <text x="350" y="555" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">SAMPLE</text>
+<svg class="stage" data-i="2" width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#171717"/>
+  <defs><filter id="g2"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <text x="400" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
+  <text x="337" y="40" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g2)">INCOMING REQUEST</text>
+  <text x="392" y="58" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g2)">│</text>
+  <text x="392" y="76" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g2)">▼</text>
+  <text x="291" y="94" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g2)">┌──────────────────────────┐</text>
+  <text x="291" y="112" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">│    SAMPLE 2 BACKENDS     │</text>
+  <text x="291" y="130" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">│   AT RANDOM FROM POOL    │</text>
+  <text x="291" y="148" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g2)">└────────┬────────┬────────┘</text>
+  <text x="361" y="166" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">│        │</text>
+  <text x="306" y="184" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">┌──────▼──┐  </text>
+  <text x="408" y="184" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g2)">┌──▼──────┐</text>
+  <text x="306" y="202" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">│BACKEND A│  </text>
+  <text x="408" y="202" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g2)">│BACKEND B│</text>
+  <text x="306" y="220" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">│score=0.9│  </text>
+  <text x="408" y="220" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g2)">│score=0.5│</text>
+  <text x="306" y="238" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g2)">└──────┬──┘  </text>
+  <text x="408" y="238" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g2)">└─────────┘</text>
+  <text x="361" y="256" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│</text>
+  <text x="361" y="274" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│  (higher score wins)</text>
+  <text x="361" y="292" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">▼</text>
+  <text x="291" y="310" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──────────────────────────┐</text>
+  <text x="291" y="328" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│       SEND REQUEST       │</text>
+  <text x="291" y="346" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└────────────┬─────────────┘</text>
+  <text x="392" y="364" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│</text>
+  <text x="392" y="382" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">▼</text>
+  <text x="291" y="400" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──────────────────────────┐</text>
+  <text x="291" y="418" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│    UPDATE HEALTH AND     │</text>
+  <text x="291" y="436" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│    PERFORMANCE STATS     │</text>
+  <text x="291" y="454" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└──────────────────────────┘</text>
+  <text x="400" y="476" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">two backends picked at random — no ranking, no coordination</text>
+  <text x="400" y="500" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool</text>
+  <circle cx="268" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g2)"/>
+  <text x="268" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B1</text>
+  <circle cx="312" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="312" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B2</text>
+  <circle cx="356" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="356" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B3</text>
+  <circle cx="400" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g2)"/>
+  <text x="400" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B4</text>
+  <circle cx="444" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="444" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B5</text>
+  <circle cx="488" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="488" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B6</text>
+  <circle cx="532" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="532" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B7</text>
+  <text x="400" y="578" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">SAMPLE</text>
 </svg>
 
-<svg class="stage" data-i="3" width="700" height="580" viewBox="0 0 700 580" xmlns="http://www.w3.org/2000/svg">
-  <rect width="700" height="580" fill="#171717"/>
-  <defs><filter id="g3"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-  <text x="350" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
-  <text x="293" y="42" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g3)">INCOMING REQUEST</text>
-  <text x="343" y="58" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g3)">│</text>
-  <text x="343" y="74" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g3)">▼</text>
-  <text x="249" y="90" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g3)">┌──────────────────────────┐</text>
-  <text x="249" y="106" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g3)">│    SAMPLE 2 BACKENDS     │</text>
-  <text x="249" y="122" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g3)">│   AT RANDOM FROM POOL    │</text>
-  <text x="249" y="138" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g3)">└────────┬────────┬────────┘</text>
-  <text x="314" y="154" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g3)">│        │</text>
-  <text x="264" y="170" font-family="JetBrains Mono" font-size="12" fill="#22C55E" filter="url(#g3)">┌──────▼──┐  </text>
-  <text x="357" y="170" font-family="JetBrains Mono" font-size="12" fill="#D97706" filter="url(#g3)">┌──▼──────┐</text>
-  <text x="264" y="186" font-family="JetBrains Mono" font-size="12" fill="#22C55E" filter="url(#g3)">│BACKEND A│  </text>
-  <text x="357" y="186" font-family="JetBrains Mono" font-size="12" fill="#D97706" filter="url(#g3)">│BACKEND B│</text>
-  <text x="264" y="202" font-family="JetBrains Mono" font-size="12" fill="#22C55E" filter="url(#g3)">│score=0.9│  </text>
-  <text x="357" y="202" font-family="JetBrains Mono" font-size="12" fill="#D97706" filter="url(#g3)">│score=0.5│</text>
-  <text x="264" y="218" font-family="JetBrains Mono" font-size="12" fill="#22C55E" filter="url(#g3)">└──────┬──┘  </text>
-  <text x="357" y="218" font-family="JetBrains Mono" font-size="12" fill="#D97706" filter="url(#g3)">└─────────┘</text>
-  <text x="314" y="234" font-family="JetBrains Mono" font-size="12" fill="#22C55E" filter="url(#g3)">│</text>
-  <text x="314" y="250" font-family="JetBrains Mono" font-size="12" fill="#22C55E" xml:space="preserve" filter="url(#g3)">│  (higher score wins)</text>
-  <text x="314" y="266" font-family="JetBrains Mono" font-size="12" fill="#22C55E" filter="url(#g3)">▼</text>
-  <text x="249" y="282" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──────────────────────────┐</text>
-  <text x="249" y="298" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│       SEND REQUEST       │</text>
-  <text x="249" y="314" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└────────────┬─────────────┘</text>
-  <text x="343" y="330" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│</text>
-  <text x="343" y="346" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">▼</text>
-  <text x="249" y="362" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──────────────────────────┐</text>
-  <text x="249" y="378" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│    UPDATE HEALTH AND     │</text>
-  <text x="249" y="394" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│    PERFORMANCE STATS     │</text>
-  <text x="249" y="410" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└──────────────────────────┘</text>
-  <text x="350" y="438" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool (n backends, 2 sampled per request)</text>
-  <circle cx="218" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="218" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B1</text>
-  <circle cx="254" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="254" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B2</text>
-  <circle cx="290" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="290" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B3</text>
-  <circle cx="326" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="326" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B4</text>
-  <circle cx="362" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="362" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B5</text>
-  <circle cx="398" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="398" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B6</text>
-  <circle cx="434" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="434" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B7</text>
-  <text x="350" y="502" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">one comparison per request — the better score wins</text>
-  <text x="350" y="555" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#22C55E" font-weight="bold">COMPARE</text>
+<svg class="stage" data-i="3" width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#171717"/>
+  <defs><filter id="g3"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <text x="400" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
+  <text x="337" y="40" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g3)">INCOMING REQUEST</text>
+  <text x="392" y="58" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g3)">│</text>
+  <text x="392" y="76" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g3)">▼</text>
+  <text x="291" y="94" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g3)">┌──────────────────────────┐</text>
+  <text x="291" y="112" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g3)">│    SAMPLE 2 BACKENDS     │</text>
+  <text x="291" y="130" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g3)">│   AT RANDOM FROM POOL    │</text>
+  <text x="291" y="148" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g3)">└────────┬────────┬────────┘</text>
+  <text x="361" y="166" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g3)">│        │</text>
+  <text x="306" y="184" font-family="JetBrains Mono" font-size="13" fill="#22C55E" xml:space="preserve" filter="url(#g3)">┌──────▼──┐  </text>
+  <text x="408" y="184" font-family="JetBrains Mono" font-size="13" fill="#D97706" filter="url(#g3)">┌──▼──────┐</text>
+  <text x="306" y="202" font-family="JetBrains Mono" font-size="13" fill="#22C55E" xml:space="preserve" filter="url(#g3)">│BACKEND A│  </text>
+  <text x="408" y="202" font-family="JetBrains Mono" font-size="13" fill="#D97706" filter="url(#g3)">│BACKEND B│</text>
+  <text x="306" y="220" font-family="JetBrains Mono" font-size="13" fill="#22C55E" xml:space="preserve" filter="url(#g3)">│score=0.9│  </text>
+  <text x="408" y="220" font-family="JetBrains Mono" font-size="13" fill="#D97706" filter="url(#g3)">│score=0.5│</text>
+  <text x="306" y="238" font-family="JetBrains Mono" font-size="13" fill="#22C55E" xml:space="preserve" filter="url(#g3)">└──────┬──┘  </text>
+  <text x="408" y="238" font-family="JetBrains Mono" font-size="13" fill="#D97706" filter="url(#g3)">└─────────┘</text>
+  <text x="361" y="256" font-family="JetBrains Mono" font-size="13" fill="#22C55E" filter="url(#g3)">│</text>
+  <text x="361" y="274" font-family="JetBrains Mono" font-size="13" fill="#22C55E" xml:space="preserve" filter="url(#g3)">│  (higher score wins)</text>
+  <text x="361" y="292" font-family="JetBrains Mono" font-size="13" fill="#22C55E" filter="url(#g3)">▼</text>
+  <text x="291" y="310" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──────────────────────────┐</text>
+  <text x="291" y="328" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│       SEND REQUEST       │</text>
+  <text x="291" y="346" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└────────────┬─────────────┘</text>
+  <text x="392" y="364" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│</text>
+  <text x="392" y="382" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">▼</text>
+  <text x="291" y="400" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──────────────────────────┐</text>
+  <text x="291" y="418" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│    UPDATE HEALTH AND     │</text>
+  <text x="291" y="436" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│    PERFORMANCE STATS     │</text>
+  <text x="291" y="454" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└──────────────────────────┘</text>
+  <text x="400" y="476" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">one comparison per request — the better score wins</text>
+  <text x="400" y="500" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool</text>
+  <circle cx="268" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="268" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B1</text>
+  <circle cx="312" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="312" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B2</text>
+  <circle cx="356" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="356" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B3</text>
+  <circle cx="400" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="400" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B4</text>
+  <circle cx="444" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="444" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B5</text>
+  <circle cx="488" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="488" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B6</text>
+  <circle cx="532" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="532" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B7</text>
+  <text x="400" y="578" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#22C55E" font-weight="bold">COMPARE</text>
 </svg>
 
-<svg class="stage" data-i="4" width="700" height="580" viewBox="0 0 700 580" xmlns="http://www.w3.org/2000/svg">
-  <rect width="700" height="580" fill="#171717"/>
-  <defs><filter id="g4"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-  <text x="350" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
-  <text x="293" y="42" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g4)">INCOMING REQUEST</text>
-  <text x="343" y="58" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g4)">│</text>
-  <text x="343" y="74" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g4)">▼</text>
-  <text x="249" y="90" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g4)">┌──────────────────────────┐</text>
-  <text x="249" y="106" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g4)">│    SAMPLE 2 BACKENDS     │</text>
-  <text x="249" y="122" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g4)">│   AT RANDOM FROM POOL    │</text>
-  <text x="249" y="138" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g4)">└────────┬────────┬────────┘</text>
-  <text x="314" y="154" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g4)">│        │</text>
-  <text x="264" y="170" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g4)">┌──────▼──┐  </text>
-  <text x="357" y="170" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──▼──────┐</text>
-  <text x="264" y="186" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g4)">│BACKEND A│  </text>
-  <text x="357" y="186" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│BACKEND B│</text>
-  <text x="264" y="202" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g4)">│score=0.9│  </text>
-  <text x="357" y="202" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│score=0.5│</text>
-  <text x="264" y="218" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g4)">└──────┬──┘  </text>
-  <text x="357" y="218" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└─────────┘</text>
-  <text x="314" y="234" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g4)">│</text>
-  <text x="314" y="250" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" xml:space="preserve" filter="url(#g4)">│  (higher score wins)</text>
-  <text x="314" y="266" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g4)">▼</text>
-  <text x="249" y="282" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g4)">┌──────────────────────────┐</text>
-  <text x="249" y="298" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" xml:space="preserve" filter="url(#g4)">│       SEND REQUEST       │</text>
-  <text x="249" y="314" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g4)">└────────────┬─────────────┘</text>
-  <text x="343" y="330" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g4)">│</text>
-  <text x="343" y="346" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g4)">▼</text>
-  <text x="249" y="362" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──────────────────────────┐</text>
-  <text x="249" y="378" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│    UPDATE HEALTH AND     │</text>
-  <text x="249" y="394" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A" xml:space="preserve">│    PERFORMANCE STATS     │</text>
-  <text x="249" y="410" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└──────────────────────────┘</text>
-  <text x="350" y="438" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool (n backends, 2 sampled per request)</text>
-  <circle cx="218" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="218" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B1</text>
-  <circle cx="254" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="254" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B2</text>
-  <circle cx="290" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="290" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B3</text>
-  <circle cx="326" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="326" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B4</text>
-  <circle cx="362" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="362" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B5</text>
-  <circle cx="398" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="398" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B6</text>
-  <circle cx="434" cy="462" r="12" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
-  <text x="434" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#2A2A2A">B7</text>
-  <text x="350" y="502" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">request routed to the higher-scored backend</text>
-  <text x="350" y="555" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">ROUTE</text>
+<svg class="stage" data-i="4" width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#171717"/>
+  <defs><filter id="g4"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <text x="400" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
+  <text x="337" y="40" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g4)">INCOMING REQUEST</text>
+  <text x="392" y="58" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g4)">│</text>
+  <text x="392" y="76" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g4)">▼</text>
+  <text x="291" y="94" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g4)">┌──────────────────────────┐</text>
+  <text x="291" y="112" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g4)">│    SAMPLE 2 BACKENDS     │</text>
+  <text x="291" y="130" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g4)">│   AT RANDOM FROM POOL    │</text>
+  <text x="291" y="148" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g4)">└────────┬────────┬────────┘</text>
+  <text x="361" y="166" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g4)">│        │</text>
+  <text x="306" y="184" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g4)">┌──────▼──┐  </text>
+  <text x="408" y="184" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──▼──────┐</text>
+  <text x="306" y="202" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g4)">│BACKEND A│  </text>
+  <text x="408" y="202" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│BACKEND B│</text>
+  <text x="306" y="220" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g4)">│score=0.9│  </text>
+  <text x="408" y="220" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│score=0.5│</text>
+  <text x="306" y="238" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g4)">└──────┬──┘  </text>
+  <text x="408" y="238" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└─────────┘</text>
+  <text x="361" y="256" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g4)">│</text>
+  <text x="361" y="274" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g4)">│  (higher score wins)</text>
+  <text x="361" y="292" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g4)">▼</text>
+  <text x="291" y="310" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g4)">┌──────────────────────────┐</text>
+  <text x="291" y="328" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g4)">│       SEND REQUEST       │</text>
+  <text x="291" y="346" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g4)">└────────────┬─────────────┘</text>
+  <text x="392" y="364" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g4)">│</text>
+  <text x="392" y="382" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g4)">▼</text>
+  <text x="291" y="400" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──────────────────────────┐</text>
+  <text x="291" y="418" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│    UPDATE HEALTH AND     │</text>
+  <text x="291" y="436" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A" xml:space="preserve">│    PERFORMANCE STATS     │</text>
+  <text x="291" y="454" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└──────────────────────────┘</text>
+  <text x="400" y="476" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">request routed to the higher-scored backend</text>
+  <text x="400" y="500" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool</text>
+  <circle cx="268" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="268" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B1</text>
+  <circle cx="312" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="312" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B2</text>
+  <circle cx="356" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="356" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B3</text>
+  <circle cx="400" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="400" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B4</text>
+  <circle cx="444" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="444" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B5</text>
+  <circle cx="488" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="488" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B6</text>
+  <circle cx="532" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
+  <text x="532" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B7</text>
+  <text x="400" y="578" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">ROUTE</text>
 </svg>
 
-<svg class="stage" data-i="5" width="700" height="580" viewBox="0 0 700 580" xmlns="http://www.w3.org/2000/svg">
-  <rect width="700" height="580" fill="#171717"/>
-  <defs><filter id="g5"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-  <text x="350" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
-  <text x="293" y="42" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">INCOMING REQUEST</text>
-  <text x="343" y="58" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">│</text>
-  <text x="343" y="74" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">▼</text>
-  <text x="249" y="90" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">┌──────────────────────────┐</text>
-  <text x="249" y="106" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g5)">│    SAMPLE 2 BACKENDS     │</text>
-  <text x="249" y="122" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g5)">│   AT RANDOM FROM POOL    │</text>
-  <text x="249" y="138" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">└────────┬────────┬────────┘</text>
-  <text x="314" y="154" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g5)">│        │</text>
-  <text x="264" y="170" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">┌──────▼──┐  </text>
-  <text x="357" y="170" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">┌──▼──────┐</text>
-  <text x="264" y="186" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">│BACKEND A│  </text>
-  <text x="357" y="186" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│BACKEND B│</text>
-  <text x="264" y="202" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">│score=0.9│  </text>
-  <text x="357" y="202" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">│score=0.5│</text>
-  <text x="264" y="218" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">└──────┬──┘  </text>
-  <text x="357" y="218" font-family="JetBrains Mono" font-size="12" fill="#2A2A2A">└─────────┘</text>
-  <text x="314" y="234" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">│</text>
-  <text x="314" y="250" font-family="JetBrains Mono" font-size="12" fill="#404040" xml:space="preserve" filter="url(#g5)">│  (higher score wins)</text>
-  <text x="314" y="266" font-family="JetBrains Mono" font-size="12" fill="#404040" filter="url(#g5)">▼</text>
-  <text x="249" y="282" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g5)">┌──────────────────────────┐</text>
-  <text x="249" y="298" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" xml:space="preserve" filter="url(#g5)">│       SEND REQUEST       │</text>
-  <text x="249" y="314" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g5)">└────────────┬─────────────┘</text>
-  <text x="343" y="330" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g5)">│</text>
-  <text x="343" y="346" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g5)">▼</text>
-  <text x="249" y="362" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g5)">┌──────────────────────────┐</text>
-  <text x="249" y="378" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" xml:space="preserve" filter="url(#g5)">│    UPDATE HEALTH AND     │</text>
-  <text x="249" y="394" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" xml:space="preserve" filter="url(#g5)">│    PERFORMANCE STATS     │</text>
-  <text x="249" y="410" font-family="JetBrains Mono" font-size="12" fill="#0B80FF" filter="url(#g5)">└──────────────────────────┘</text>
-  <text x="350" y="438" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">backend pool (n backends, 2 sampled per request)</text>
-  <circle cx="218" cy="462" r="12" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
-  <text x="218" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#0B80FF">B1</text>
-  <circle cx="254" cy="462" r="12" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
-  <text x="254" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#0B80FF">B2</text>
-  <circle cx="290" cy="462" r="12" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
-  <text x="290" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#0B80FF">B3</text>
-  <circle cx="326" cy="462" r="12" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
-  <text x="326" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#0B80FF">B4</text>
-  <circle cx="362" cy="462" r="12" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
-  <text x="362" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#0B80FF">B5</text>
-  <circle cx="398" cy="462" r="12" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
-  <text x="398" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#0B80FF">B6</text>
-  <circle cx="434" cy="462" r="12" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
-  <text x="434" y="466" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#0B80FF">B7</text>
-  <text x="350" y="502" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">scores stay fresh — recovery is automatic</text>
-  <text x="350" y="555" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">OBSERVE</text>
+<svg class="stage" data-i="5" width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#171717"/>
+  <defs><filter id="g5"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <text x="400" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#A3A3A3">p2c load balancer</text>
+  <text x="337" y="40" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g5)">INCOMING REQUEST</text>
+  <text x="392" y="58" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g5)">│</text>
+  <text x="392" y="76" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g5)">▼</text>
+  <text x="291" y="94" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g5)">┌──────────────────────────┐</text>
+  <text x="291" y="112" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g5)">│    SAMPLE 2 BACKENDS     │</text>
+  <text x="291" y="130" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g5)">│   AT RANDOM FROM POOL    │</text>
+  <text x="291" y="148" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g5)">└────────┬────────┬────────┘</text>
+  <text x="361" y="166" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g5)">│        │</text>
+  <text x="306" y="184" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g5)">┌──────▼──┐  </text>
+  <text x="408" y="184" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">┌──▼──────┐</text>
+  <text x="306" y="202" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g5)">│BACKEND A│  </text>
+  <text x="408" y="202" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│BACKEND B│</text>
+  <text x="306" y="220" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g5)">│score=0.9│  </text>
+  <text x="408" y="220" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">│score=0.5│</text>
+  <text x="306" y="238" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g5)">└──────┬──┘  </text>
+  <text x="408" y="238" font-family="JetBrains Mono" font-size="13" fill="#2A2A2A">└─────────┘</text>
+  <text x="361" y="256" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g5)">│</text>
+  <text x="361" y="274" font-family="JetBrains Mono" font-size="13" fill="#404040" xml:space="preserve" filter="url(#g5)">│  (higher score wins)</text>
+  <text x="361" y="292" font-family="JetBrains Mono" font-size="13" fill="#404040" filter="url(#g5)">▼</text>
+  <text x="291" y="310" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g5)">┌──────────────────────────┐</text>
+  <text x="291" y="328" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g5)">│       SEND REQUEST       │</text>
+  <text x="291" y="346" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g5)">└────────────┬─────────────┘</text>
+  <text x="392" y="364" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g5)">│</text>
+  <text x="392" y="382" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g5)">▼</text>
+  <text x="291" y="400" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g5)">┌──────────────────────────┐</text>
+  <text x="291" y="418" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g5)">│    UPDATE HEALTH AND     │</text>
+  <text x="291" y="436" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" xml:space="preserve" filter="url(#g5)">│    PERFORMANCE STATS     │</text>
+  <text x="291" y="454" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" filter="url(#g5)">└──────────────────────────┘</text>
+  <text x="400" y="476" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A3A3A3">scores stay fresh — recovery is automatic</text>
+  <text x="400" y="500" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#404040">backend pool</text>
+  <circle cx="268" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
+  <text x="268" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B1</text>
+  <circle cx="312" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
+  <text x="312" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B2</text>
+  <circle cx="356" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
+  <text x="356" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B3</text>
+  <circle cx="400" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
+  <text x="400" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B4</text>
+  <circle cx="444" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
+  <text x="444" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B5</text>
+  <circle cx="488" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
+  <text x="488" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B6</text>
+  <circle cx="532" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
+  <text x="532" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B7</text>
+  <text x="400" y="578" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">OBSERVE</text>
 </svg>
 
+<div class="spacer"></div>
+</div>
 <div class="controls">
   <div id="dots" class="dots"></div>
   <div class="controls-buttons">
@@ -345,13 +348,13 @@
     <button id="next">next</button>
   </div>
 </div>
-</div>
 
 <script>
   const stages = document.querySelectorAll('.stage');
   const N = stages.length;
   const LABELS = ['overview','receive','sample','compare','route','observe'];
   const INTERVAL = 2200;
+  const INTERVAL_OVERVIEW = 5000;
   let cur = 0, timer = null;
   const dotsEl = document.getElementById('dots');
   LABELS.forEach((_,i) => {
@@ -363,15 +366,18 @@
   });
   function go(i) {
     stages[cur].classList.remove('active'); dotsEl.children[cur].classList.remove('on');
-    cur = i;
-    stages[cur].classList.add('active'); dotsEl.children[cur].classList.add('on');
+    cur=i; stages[cur].classList.add('active'); dotsEl.children[cur].classList.add('on');
   }
   function step(d) { go((cur+d+N)%N); }
-  function play() { timer = setInterval(()=>step(1), INTERVAL); document.getElementById('play').classList.add('active'); }
-  function pause() { clearInterval(timer); timer=null; document.getElementById('play').classList.remove('active'); }
-  document.getElementById('prev').addEventListener('click', ()=>{ pause(); step(-1); });
-  document.getElementById('next').addEventListener('click', ()=>{ pause(); step(1); });
-  document.getElementById('play').addEventListener('click', ()=>{ timer?pause():play(); });
+  function scheduleNext() {
+    const delay = cur === 0 ? INTERVAL_OVERVIEW : INTERVAL;
+    timer = setTimeout(() => { step(1); if (timer !== null) scheduleNext(); }, delay);
+  }
+  function play() { scheduleNext(); document.getElementById('play').classList.add('active'); }
+  function pause() { clearTimeout(timer); timer=null; document.getElementById('play').classList.remove('active'); }
+  document.getElementById('prev').addEventListener('click',()=>{pause();step(-1);});
+  document.getElementById('next').addEventListener('click',()=>{pause();step(1);});
+  document.getElementById('play').addEventListener('click',()=>{timer?pause():play();});
   play();
 </script>
 </body>
