@@ -31,7 +31,6 @@
 </head>
 <body>
 <div class="wrap">
-
 <svg class="stage active" data-i="0" width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
   <rect width="800" height="600" fill="#171717"/>
   <defs><filter id="g0"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
@@ -182,6 +181,10 @@
   <text x="488" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B6</text>
   <circle cx="532" cy="524" r="13" fill="#1C1C1C" stroke="#2A2A2A" stroke-width="1.5"/>
   <text x="532" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#2A2A2A">B7</text>
+  <line x1="268" y1="511" x2="345" y2="238" stroke="#0B80FF" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+  <polygon points="345,238 347,247 339,245" fill="#0B80FF" opacity="0.7"/>
+  <line x1="400" y1="511" x2="447" y2="238" stroke="#0B80FF" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+  <polygon points="447,238 450,247 442,245" fill="#0B80FF" opacity="0.7"/>
   <text x="400" y="578" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">SAMPLE</text>
 </svg>
 
@@ -335,9 +338,10 @@
   <text x="488" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B6</text>
   <circle cx="532" cy="524" r="13" fill="#162435" stroke="#0B80FF" stroke-width="1.5" filter="url(#g5)"/>
   <text x="532" y="528" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#0B80FF">B7</text>
+  <path d="M 509,445 C 549,445 567,511 532,511" stroke="#0B80FF" stroke-width="1" fill="none" stroke-dasharray="4,3" opacity="0.6"/>
+  <polygon points="532,511 528,503 536,503" fill="#0B80FF" opacity="0.6"/>
   <text x="400" y="578" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#0B80FF" font-weight="bold">OBSERVE</text>
 </svg>
-
 <div class="spacer"></div>
 </div>
 <div class="controls">
@@ -348,33 +352,18 @@
     <button id="next">next</button>
   </div>
 </div>
-
 <script>
-  const stages = document.querySelectorAll('.stage');
-  const N = stages.length;
-  const LABELS = ['overview','receive','sample','compare','route','observe'];
-  const INTERVAL = 2200;
-  const INTERVAL_OVERVIEW = 5000;
-  let cur = 0, timer = null;
-  const dotsEl = document.getElementById('dots');
-  LABELS.forEach((_,i) => {
-    const d = document.createElement('div');
-    d.className = 'dot' + (i===0?' on':'');
-    d.title = LABELS[i];
-    d.addEventListener('click', () => { pause(); go(i); });
-    dotsEl.appendChild(d);
-  });
-  function go(i) {
-    stages[cur].classList.remove('active'); dotsEl.children[cur].classList.remove('on');
-    cur=i; stages[cur].classList.add('active'); dotsEl.children[cur].classList.add('on');
-  }
-  function step(d) { go((cur+d+N)%N); }
-  function scheduleNext() {
-    const delay = cur === 0 ? INTERVAL_OVERVIEW : INTERVAL;
-    timer = setTimeout(() => { step(1); if (timer !== null) scheduleNext(); }, delay);
-  }
-  function play() { scheduleNext(); document.getElementById('play').classList.add('active'); }
-  function pause() { clearTimeout(timer); timer=null; document.getElementById('play').classList.remove('active'); }
+  const stages=document.querySelectorAll('.stage'),N=stages.length;
+  const LABELS=['overview','receive','sample','compare','route','observe'];
+  const INTERVAL=2200,INTERVAL_OVERVIEW=5000;
+  let cur=0,timer=null;
+  const dotsEl=document.getElementById('dots');
+  LABELS.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' on':'');d.title=LABELS[i];d.addEventListener('click',()=>{pause();go(i);});dotsEl.appendChild(d);});
+  function go(i){stages[cur].classList.remove('active');dotsEl.children[cur].classList.remove('on');cur=i;stages[cur].classList.add('active');dotsEl.children[cur].classList.add('on');}
+  function step(d){go((cur+d+N)%N);}
+  function scheduleNext(){const delay=cur===0?INTERVAL_OVERVIEW:INTERVAL;timer=setTimeout(()=>{step(1);if(timer!==null)scheduleNext();},delay);}
+  function play(){scheduleNext();document.getElementById('play').classList.add('active');}
+  function pause(){clearTimeout(timer);timer=null;document.getElementById('play').classList.remove('active');}
   document.getElementById('prev').addEventListener('click',()=>{pause();step(-1);});
   document.getElementById('next').addEventListener('click',()=>{pause();step(1);});
   document.getElementById('play').addEventListener('click',()=>{timer?pause():play();});
