@@ -362,11 +362,12 @@
   function go(i){stages[cur].classList.remove('active');dotsEl.children[cur].classList.remove('on');cur=i;stages[cur].classList.add('active');dotsEl.children[cur].classList.add('on');}
   function step(d){go((cur+d+N)%N);}
   function scheduleNext(){const delay=cur===0?INTERVAL_OVERVIEW:INTERVAL;timer=setTimeout(()=>{step(1);if(timer!==null)scheduleNext();},delay);}
-  function play(){scheduleNext();document.getElementById('play').classList.add('active');}
-  function pause(){clearTimeout(timer);timer=null;document.getElementById('play').classList.remove('active');}
+  const playBtn=document.getElementById('play');
+  function play(){scheduleNext();playBtn.classList.add('active');playBtn.textContent='pause';}
+  function pause(){clearTimeout(timer);timer=null;playBtn.classList.remove('active');playBtn.textContent='play';}
   document.getElementById('prev').addEventListener('click',()=>{pause();step(-1);});
   document.getElementById('next').addEventListener('click',()=>{pause();step(1);});
-  document.getElementById('play').addEventListener('click',()=>{timer?pause():play();});
+  playBtn.addEventListener('click',()=>{timer?pause():play();});
   play();
 </script>
 </body>
