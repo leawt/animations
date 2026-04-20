@@ -13,10 +13,10 @@
       --bg:          #ffffff;
       --dot:         #b8b5b0;
       --dot-opacity: 0.4;
-      --text:        #57534E;
-      --muted:       rgba(87,83,78,0.6);
-      --muted2:      rgba(87,83,78,0.45);
-      --muted3:      rgba(87,83,78,0.28);
+      --text:        #3d3a36;
+      --muted:       rgba(61,58,54,0.82);
+      --muted2:      rgba(61,58,54,0.7);
+      --muted3:      rgba(61,58,54,0.55);
       --border:      #e2e0dc;
       --node-fill:   #ffffff;
       --blue:        #0019FF;
@@ -24,13 +24,13 @@
       --blue-border: rgba(0,25,255,0.22);
       --stats-fill:  rgba(0,25,255,0.03);
       --lbl-bg:      rgba(255,255,255,0.92);
-      --lbl-text:    rgba(87,83,78,0.7);
+      --lbl-text:    rgba(61,58,54,0.85);
       --div-line:    #e8e6e3;
-      --div-text:    rgba(87,83,78,0.45);
+      --div-text:    rgba(61,58,54,0.7);
       --sb-fill:     rgba(0,25,255,0.025);
       --sb-border:   rgba(0,25,255,0.08);
-      --sb-text:     rgba(87,83,78,0.7);
-      --sb-muted:    rgba(87,83,78,0.45);
+      --sb-text:     rgba(61,58,54,0.85);
+      --sb-muted:    rgba(61,58,54,0.7);
       --dot-on:      #0019FF;
       --dot-off:     #e2e0dc;
       --conn-gray:   #d0cdc8;
@@ -40,10 +40,10 @@
       --bg:          #0f0e0b;
       --dot:         rgba(255,255,255,1);
       --dot-opacity: 0.07;
-      --text:        #cac6c0;
-      --muted:       rgba(202,198,192,0.58);
-      --muted2:      rgba(202,198,192,0.42);
-      --muted3:      rgba(202,198,192,0.22);
+      --text:        #dedad5;
+      --muted:       rgba(222,218,213,0.82);
+      --muted2:      rgba(222,218,213,0.68);
+      --muted3:      rgba(222,218,213,0.5);
       --border:      rgba(255,255,255,0.09);
       --node-fill:   #1e1c18;
       --blue:        #5573ff;
@@ -51,13 +51,13 @@
       --blue-border: rgba(85,115,255,0.28);
       --stats-fill:  rgba(85,115,255,0.07);
       --lbl-bg:      rgba(18,16,12,0.94);
-      --lbl-text:    rgba(202,198,192,0.7);
+      --lbl-text:    rgba(222,218,213,0.85);
       --div-line:    rgba(255,255,255,0.08);
-      --div-text:    rgba(202,198,192,0.38);
+      --div-text:    rgba(222,218,213,0.65);
       --sb-fill:     rgba(85,115,255,0.06);
       --sb-border:   rgba(85,115,255,0.12);
-      --sb-text:     rgba(202,198,192,0.7);
-      --sb-muted:    rgba(202,198,192,0.4);
+      --sb-text:     rgba(222,218,213,0.85);
+      --sb-muted:    rgba(222,218,213,0.68);
       --dot-on:      #5573ff;
       --dot-off:     rgba(255,255,255,0.1);
       --conn-gray:   rgba(255,255,255,0.2);
@@ -91,11 +91,19 @@
       display: block;
     }
 
-    /* ── SVG dark mode overrides ──────────────────────────────────────────
-       SVG presentation attributes have specificity 0, so any CSS rule wins.
-    ── */
+    /* ── SVG overrides — presentation attrs have specificity 0, any CSS rule wins ── */
 
-    /* Node box fills and strokes */
+    /* Light mode text (overrides inline presentation attributes) */
+    .t-primary  { fill: var(--text) !important; }
+    .t-muted    { fill: var(--muted) !important; }
+    .t-muted2   { fill: var(--muted2) !important; }
+    .t-muted3   { fill: var(--muted3) !important; }
+    .t-sb       { fill: var(--sb-text) !important; }
+    .t-sb-muted { fill: var(--sb-muted) !important; }
+    .t-lbl      { fill: var(--lbl-text) !important; }
+    .t-div      { fill: var(--div-text) !important; }
+
+    /* Dark mode node box fills and strokes */
     html.dark .nd-box     { fill: var(--node-fill) !important; stroke: var(--border) !important; }
     html.dark .nd-stats   { fill: var(--stats-fill) !important; stroke: var(--blue-border) !important; }
     html.dark .sb-rect    { fill: var(--sb-fill) !important; stroke: var(--sb-border) !important; }
@@ -282,14 +290,14 @@
 
   <!-- ══ PHASE DIVIDERS ════════════════════════════════════════════════════ -->
   <g id="div-p1" opacity="0">
-    <line class="div-line" x1="52" y1="130" x2="270" y2="130" stroke="#e8e6e3" stroke-width="1"/>
-    <text class="t-div" x="278" y="134" font-size="9" fill="rgba(87,83,78,0.45)" letter-spacing="0.05em">PASS 1 — gather statistics</text>
-    <line class="div-line" x1="530" y1="130" x2="628" y2="130" stroke="#e8e6e3" stroke-width="1"/>
+    <line class="div-line" x1="52" y1="116" x2="270" y2="116" stroke="#e8e6e3" stroke-width="1"/>
+    <text class="t-div" x="278" y="120" font-size="9" fill="rgba(61,58,54,0.7)" letter-spacing="0.05em">PASS 1 — gather statistics</text>
+    <line class="div-line" x1="530" y1="116" x2="628" y2="116" stroke="#e8e6e3" stroke-width="1"/>
   </g>
   <g id="div-p2" opacity="0">
-    <line class="div-line" x1="52" y1="354" x2="262" y2="354" stroke="#e8e6e3" stroke-width="1"/>
-    <text class="t-div" x="270" y="358" font-size="9" fill="rgba(87,83,78,0.45)" letter-spacing="0.05em">PASS 2 — score + retrieve</text>
-    <line class="div-line" x1="530" y1="354" x2="628" y2="354" stroke="#e8e6e3" stroke-width="1"/>
+    <line class="div-line" x1="52" y1="332" x2="262" y2="332" stroke="#e8e6e3" stroke-width="1"/>
+    <text class="t-div" x="270" y="336" font-size="9" fill="rgba(61,58,54,0.7)" letter-spacing="0.05em">PASS 2 — score + retrieve</text>
+    <line class="div-line" x1="530" y1="332" x2="628" y2="332" stroke="#e8e6e3" stroke-width="1"/>
   </g>
 
   <!-- ══ NODES ═════════════════════════════════════════════════════════════ -->
