@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BM25 Scatter-Gather Query Path</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design tokens ── */
+    :root {
+      --bg:          #ffffff;
+      --dot:         #b8b5b0;
+      --dot-opacity: 0.4;
+      --text:        #57534E;
+      --muted:       rgba(87,83,78,0.6);
+      --muted2:      rgba(87,83,78,0.45);
+      --muted3:      rgba(87,83,78,0.28);
+      --border:      #e2e0dc;
+      --node-fill:   #ffffff;
+      --blue:        #0019FF;
+      --blue-faint:  rgba(0,25,255,0.025);
+      --blue-border: rgba(0,25,255,0.22);
+      --stats-fill:  rgba(0,25,255,0.03);
+      --lbl-bg:      rgba(255,255,255,0.92);
+      --lbl-text:    rgba(87,83,78,0.7);
+      --div-line:    #e8e6e3;
+      --div-text:    rgba(87,83,78,0.45);
+      --sb-fill:     rgba(0,25,255,0.025);
+      --sb-border:   rgba(0,25,255,0.08);
+      --sb-text:     rgba(87,83,78,0.7);
+      --sb-muted:    rgba(87,83,78,0.45);
+      --dot-on:      #0019FF;
+      --dot-off:     #e2e0dc;
+      --conn-gray:   #d0cdc8;
+    }
+
+    html.dark {
+      --bg:          #0f0e0b;
+      --dot:         rgba(255,255,255,1);
+      --dot-opacity: 0.07;
+      --text:        #cac6c0;
+      --muted:       rgba(202,198,192,0.58);
+      --muted2:      rgba(202,198,192,0.42);
+      --muted3:      rgba(202,198,192,0.22);
+      --border:      rgba(255,255,255,0.09);
+      --node-fill:   #1e1c18;
+      --blue:        #5573ff;
+      --blue-faint:  rgba(85,115,255,0.06);
+      --blue-border: rgba(85,115,255,0.28);
+      --stats-fill:  rgba(85,115,255,0.07);
+      --lbl-bg:      rgba(18,16,12,0.94);
+      --lbl-text:    rgba(202,198,192,0.7);
+      --div-line:    rgba(255,255,255,0.08);
+      --div-text:    rgba(202,198,192,0.38);
+      --sb-fill:     rgba(85,115,255,0.06);
+      --sb-border:   rgba(85,115,255,0.12);
+      --sb-text:     rgba(202,198,192,0.7);
+      --sb-muted:    rgba(202,198,192,0.4);
+      --dot-on:      #5573ff;
+      --dot-off:     rgba(255,255,255,0.1);
+      --conn-gray:   rgba(255,255,255,0.2);
+    }
+
+    body {
+      background: var(--bg);
+      height: 640px;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
+      background-size: 4.8px 4.8px;
+      opacity: var(--dot-opacity);
+      pointer-events: none;
+    }
+
+    .outer {
+      position: relative; z-index: 1;
+      width: 100%; height: 640px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    svg {
+      width: 100%; max-width: 680px;
+      height: 100%; max-height: 610px;
+      display: block;
+    }
+
+    /* ── SVG dark mode overrides ──────────────────────────────────────────
+       SVG presentation attributes have specificity 0, so any CSS rule wins.
+    ── */
+
+    /* Node box fills and strokes */
+    html.dark .nd-box     { fill: var(--node-fill) !important; stroke: var(--border) !important; }
+    html.dark .nd-stats   { fill: var(--stats-fill) !important; stroke: var(--blue-border) !important; }
+    html.dark .sb-rect    { fill: var(--sb-fill) !important; stroke: var(--sb-border) !important; }
+
+    /* Text colors */
+    html.dark .t-primary  { fill: var(--text) !important; }
+    html.dark .t-blue     { fill: var(--blue) !important; }
+    html.dark .t-muted    { fill: var(--muted) !important; }
+    html.dark .t-muted2   { fill: var(--muted2) !important; }
+    html.dark .t-muted3   { fill: var(--muted3) !important; }
+    html.dark .t-sb       { fill: var(--sb-text) !important; }
+    html.dark .t-sb-muted { fill: var(--sb-muted) !important; }
+    html.dark .t-lbl      { fill: var(--lbl-text) !important; }
+    html.dark .t-lbl-blue { fill: var(--blue) !important; }
+    html.dark .t-div      { fill: var(--div-text) !important; }
+
+    /* Arrow label backgrounds */
+    html.dark .lbl-bg     { fill: var(--lbl-bg) !important; }
+
+    /* Lines */
+    html.dark .ln-gray    { stroke: var(--conn-gray) !important; }
+    html.dark .ln-blue    { stroke: var(--blue) !important; stroke-opacity: 0.2 !important; }
+    html.dark .div-line   { stroke: var(--div-line) !important; }
+
+    /* Packet dots */
+    html.dark .pkt        { fill: var(--blue) !important; }
+
+    /* Pulse rings */
+    html.dark .pulse      { stroke: var(--blue) !important; }
+
+    /* Arrow marker strokes — can't CSS-override marker internals easily,
+       so we use separate markers for dark (defined in SVG defs) */
+  </style>
+</head>
+<body>
+<div class="outer" role="img" aria-label="BM25 scatter-gather two-pass query diagram">
+<svg viewBox="0 0 680 610"
+     xmlns="http://www.w3.org/2000/svg"
+     font-family="'JetBrains Mono', monospace"
+     aria-hidden="true">
+
+  <defs>
+    <!-- Light arrowheads -->
+    <marker id="ah-blue-l" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M2,2 L8,4.5 L2,7" fill="none" stroke="#0019FF" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="ah-gray-l" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M2,2 L8,4.5 L2,7" fill="none" stroke="#d0cdc8" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <!-- Dark arrowheads -->
+    <marker id="ah-blue-d" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M2,2 L8,4.5 L2,7" fill="none" stroke="#5573ff" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="ah-gray-d" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M2,2 L8,4.5 L2,7" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+
+    <!-- Motion paths -->
+    <path id="m-p1d0" d="M340,110 C340,136 130,140 130,160"/>
+    <path id="m-p1d1" d="M340,110 L340,160"/>
+    <path id="m-p1d2" d="M340,110 C340,136 550,140 550,160"/>
+    <path id="m-p1u0" d="M130,200 C130,230 340,234 340,258"/>
+    <path id="m-p1u1" d="M340,200 L340,258"/>
+    <path id="m-p1u2" d="M550,200 C550,230 340,234 340,258"/>
+    <path id="m-p2d0" d="M340,322 C340,356 130,360 130,380"/>
+    <path id="m-p2d1" d="M340,322 L340,380"/>
+    <path id="m-p2d2" d="M340,322 C340,356 550,360 550,380"/>
+    <path id="m-p2u0" d="M130,420 C130,446 340,450 340,468"/>
+    <path id="m-p2u1" d="M340,420 L340,468"/>
+    <path id="m-p2u2" d="M550,420 C550,446 340,450 340,468"/>
+  </defs>
+
+  <!-- ══ CONNECTOR LINES ══════════════════════════════════════════════════ -->
+  <line id="ln-a" class="ln-gray" x1="340" y1="54" x2="340" y2="76"
+    stroke="#d0cdc8" stroke-width="1" marker-end="url(#ah-gray-l)" opacity="0"/>
+
+  <path id="ln-p1d0" class="ln-blue" d="M340,110 C340,136 130,140 130,160"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
+  <path id="ln-p1d1" class="ln-blue" d="M340,110 L340,160"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
+  <path id="ln-p1d2" class="ln-blue" d="M340,110 C340,136 550,140 550,160"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
+
+  <path id="ln-p1u0" class="ln-blue" d="M130,200 C130,230 340,234 340,258"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
+    stroke-dasharray="4 3" opacity="0"/>
+  <path id="ln-p1u1" class="ln-blue" d="M340,200 L340,258"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
+    stroke-dasharray="4 3" opacity="0"/>
+  <path id="ln-p1u2" class="ln-blue" d="M550,200 C550,230 340,234 340,258"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
+    stroke-dasharray="4 3" opacity="0"/>
+
+  <line id="ln-b" x1="340" y1="322" x2="340" y2="380"
+    stroke="#0019FF" stroke-width="1" stroke-opacity="0.25" opacity="0"/>
+
+  <path id="ln-p2d0" class="ln-blue" d="M340,322 C340,356 130,360 130,380"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
+  <path id="ln-p2d1" class="ln-blue" d="M340,322 L340,380"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
+  <path id="ln-p2d2" class="ln-blue" d="M340,322 C340,356 550,360 550,380"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
+
+  <path id="ln-p2u0" class="ln-blue" d="M130,420 C130,446 340,450 340,468"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
+    stroke-dasharray="4 3" opacity="0"/>
+  <path id="ln-p2u1" class="ln-blue" d="M340,420 L340,468"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
+    stroke-dasharray="4 3" opacity="0"/>
+  <path id="ln-p2u2" class="ln-blue" d="M550,420 C550,446 340,450 340,468"
+    fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
+    stroke-dasharray="4 3" opacity="0"/>
+
+  <line id="ln-c" class="ln-gray" x1="340" y1="502" x2="340" y2="520"
+    stroke="#d0cdc8" stroke-width="1" marker-end="url(#ah-gray-l)" opacity="0"/>
+
+  <!-- ══ ARROW LABELS (appear with packets, stay) ═══════════════════════ -->
+  <g id="lbl-query" opacity="0">
+    <rect class="lbl-bg" x="312" y="126" width="56" height="16" rx="3" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl-blue" x="340" y="138" text-anchor="middle" font-size="9" fill="#0019FF">query</text>
+  </g>
+  <g id="lbl-stats" opacity="0">
+    <rect class="lbl-bg" x="312" y="218" width="56" height="16" rx="3" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl" x="340" y="230" text-anchor="middle" font-size="9" fill="rgba(87,83,78,0.7)">stats</text>
+  </g>
+  <g id="lbl-idf" opacity="0">
+    <rect class="lbl-bg" x="320" y="344" width="40" height="16" rx="3" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl-blue" x="340" y="356" text-anchor="middle" font-size="9" fill="#0019FF">IDF</text>
+  </g>
+  <g id="lbl-topk" opacity="0">
+    <rect class="lbl-bg" x="310" y="436" width="60" height="16" rx="3" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl" x="340" y="448" text-anchor="middle" font-size="9" fill="rgba(87,83,78,0.7)">top-k</text>
+  </g>
+
+  <!-- ══ DATA PACKETS ══════════════════════════════════════════════════════ -->
+  <circle id="pk-p1d0" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p1d0" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p1d0"/></animateMotion>
+  </circle>
+  <circle id="pk-p1d1" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p1d1" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p1d1"/></animateMotion>
+  </circle>
+  <circle id="pk-p1d2" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p1d2" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p1d2"/></animateMotion>
+  </circle>
+  <circle id="pk-p1u0" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p1u0" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p1u0"/></animateMotion>
+  </circle>
+  <circle id="pk-p1u1" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p1u1" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p1u1"/></animateMotion>
+  </circle>
+  <circle id="pk-p1u2" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p1u2" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p1u2"/></animateMotion>
+  </circle>
+  <circle id="pk-p2d0" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p2d0" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p2d0"/></animateMotion>
+  </circle>
+  <circle id="pk-p2d1" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p2d1" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p2d1"/></animateMotion>
+  </circle>
+  <circle id="pk-p2d2" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p2d2" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p2d2"/></animateMotion>
+  </circle>
+  <circle id="pk-p2u0" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p2u0" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p2u0"/></animateMotion>
+  </circle>
+  <circle id="pk-p2u1" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p2u1" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p2u1"/></animateMotion>
+  </circle>
+  <circle id="pk-p2u2" class="pkt" r="4.5" fill="#0019FF" opacity="0">
+    <animateMotion id="am-p2u2" dur="0.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0 0.75 1"><mpath href="#m-p2u2"/></animateMotion>
+  </circle>
+
+  <!-- ══ PULSE RINGS ════════════════════════════════════════════════════════ -->
+  <circle id="pu-p1-0" class="pulse" cx="130" cy="180" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p1-1" class="pulse" cx="340" cy="180" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p1-2" class="pulse" cx="550" cy="180" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p2-0" class="pulse" cx="130" cy="400" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p2-1" class="pulse" cx="340" cy="400" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p2-2" class="pulse" cx="550" cy="400" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+
+  <!-- ══ PHASE DIVIDERS ════════════════════════════════════════════════════ -->
+  <g id="div-p1" opacity="0">
+    <line class="div-line" x1="52" y1="130" x2="270" y2="130" stroke="#e8e6e3" stroke-width="1"/>
+    <text class="t-div" x="278" y="134" font-size="9" fill="rgba(87,83,78,0.45)" letter-spacing="0.05em">PASS 1 — gather statistics</text>
+    <line class="div-line" x1="530" y1="130" x2="628" y2="130" stroke="#e8e6e3" stroke-width="1"/>
+  </g>
+  <g id="div-p2" opacity="0">
+    <line class="div-line" x1="52" y1="354" x2="262" y2="354" stroke="#e8e6e3" stroke-width="1"/>
+    <text class="t-div" x="270" y="358" font-size="9" fill="rgba(87,83,78,0.45)" letter-spacing="0.05em">PASS 2 — score + retrieve</text>
+    <line class="div-line" x1="530" y1="354" x2="628" y2="354" stroke="#e8e6e3" stroke-width="1"/>
+  </g>
+
+  <!-- ══ NODES ═════════════════════════════════════════════════════════════ -->
+
+  <!-- Client -->
+  <g id="nd-client" opacity="0">
+    <rect class="nd-box" x="280" y="18" width="120" height="36" rx="5" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-primary" x="340" y="33" text-anchor="middle" font-size="11" fill="#57534E" font-weight="500">Client</text>
+    <text class="t-muted2" x="340" y="47" text-anchor="middle" font-size="9" fill="rgba(87,83,78,0.45)">"machine learning"</text>
+  </g>
+
+  <!-- Query Coordinator -->
+  <g id="nd-coord" opacity="0">
+    <rect class="nd-box" x="258" y="76" width="164" height="34" rx="5"
+      fill="white" stroke="rgba(0,25,255,0.25)" stroke-width="1.2"/>
+    <text class="t-blue" x="340" y="90" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">Query Coordinator</text>
+    <text class="t-muted2" x="340" y="103" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">orchestrates both passes</text>
+  </g>
+
+  <!-- Slabs pass 1 -->
+  <g id="nd-slabs-1" opacity="0">
+    <rect class="nd-box" x="80" y="160" width="100" height="40" rx="4" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="130" y="177" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_0</text>
+    <text class="t-muted2" x="130" y="191" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">scan segment</text>
+    <rect class="nd-box" x="290" y="160" width="100" height="40" rx="4" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="340" y="177" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_1</text>
+    <text class="t-muted2" x="340" y="191" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">scan segment</text>
+    <rect class="nd-box" x="500" y="160" width="100" height="40" rx="4" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="550" y="177" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_2</text>
+    <text class="t-muted2" x="550" y="191" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">scan segment</text>
+  </g>
+
+  <!-- Global BM25 stats -->
+  <g id="nd-stats" opacity="0">
+    <rect class="nd-stats" x="148" y="258" width="384" height="64" rx="6"
+      fill="rgba(0,25,255,0.03)" stroke="rgba(0,25,255,0.22)" stroke-width="1.5"/>
+    <text class="t-blue" x="340" y="279" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">global BM25 stats</text>
+    <g id="nd-stats-fields" opacity="0">
+      <text class="t-muted" x="188" y="297" font-size="9" fill="rgba(87,83,78,0.6)">total_docs</text>
+      <text class="t-muted3" x="270" y="297" font-size="9" fill="rgba(87,83,78,0.28)">·</text>
+      <text class="t-muted" x="282" y="297" font-size="9" fill="rgba(87,83,78,0.6)">total_tokens</text>
+      <text class="t-muted3" x="370" y="297" font-size="9" fill="rgba(87,83,78,0.28)">·</text>
+      <text class="t-muted" x="382" y="297" font-size="9" fill="rgba(87,83,78,0.6)">term_doc_freqs</text>
+      <text class="t-muted2" x="340" y="313" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.4)" font-style="italic">all shards score against the same IDF</text>
+    </g>
+  </g>
+
+  <!-- Slabs pass 2 -->
+  <g id="nd-slabs-2" opacity="0">
+    <rect class="nd-box" x="80" y="380" width="100" height="40" rx="4" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="130" y="397" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_0</text>
+    <text class="t-muted2" x="130" y="411" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
+    <rect class="nd-box" x="290" y="380" width="100" height="40" rx="4" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="340" y="397" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_1</text>
+    <text class="t-muted2" x="340" y="411" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
+    <rect class="nd-box" x="500" y="380" width="100" height="40" rx="4" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="550" y="397" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_2</text>
+    <text class="t-muted2" x="550" y="411" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
+  </g>
+
+  <!-- Merge / results -->
+  <g id="nd-results" opacity="0">
+    <rect class="nd-box" x="254" y="468" width="172" height="34" rx="5" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-primary" x="340" y="483" text-anchor="middle" font-size="11" fill="#57534E" font-weight="500">merge top-k</text>
+    <text class="t-muted2" x="340" y="496" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">globally accurate BM25</text>
+  </g>
+
+  <!-- Final label -->
+  <g id="nd-final" opacity="0">
+    <text class="t-muted2" x="340" y="536" text-anchor="middle" font-size="9.5"
+      fill="rgba(87,83,78,0.5)" letter-spacing="0.04em">RANKED RESULTS → CLIENT</text>
+  </g>
+
+  <!-- ══ STATUS BAR ════════════════════════════════════════════════════════ -->
+  <rect class="sb-rect" x="52" y="552" width="576" height="46" rx="5"
+    fill="rgba(0,25,255,0.025)" stroke="rgba(0,25,255,0.08)" stroke-width="1"/>
+  <circle id="sb-dot1" cx="72" cy="567" r="3.5" fill="#e2e0dc"/>
+  <circle id="sb-dot2" cx="72" cy="583" r="3.5" fill="#e2e0dc"/>
+  <text id="sb-l1" class="t-sb" x="84" y="570" font-size="9" fill="rgba(87,83,78,0.7)"> </text>
+  <text id="sb-l2" class="t-sb-muted" x="84" y="586" font-size="9" fill="rgba(87,83,78,0.45)"> </text>
+
+</svg>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Theme ──────────────────────────────────────────────────────────────────
+  function applyTheme(t) {
+    const dark = t === 'dark';
+    document.documentElement.classList.toggle('dark', dark);
+    // Swap arrowhead marker references on themed lines
+    const lnA = document.getElementById('ln-a');
+    const lnC = document.getElementById('ln-c');
+    const marker = dark ? 'url(#ah-gray-d)' : 'url(#ah-gray-l)';
+    if (lnA) lnA.setAttribute('marker-end', marker);
+    if (lnC) lnC.setAttribute('marker-end', marker);
+    // Status bar dot colours update via CSS vars; force repaint on SVG
+    updateStatusDots();
+  }
+
+  (function initTheme() {
+    const param = new URLSearchParams(location.search).get('theme');
+    const osDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(param || (osDark ? 'dark' : 'light'));
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!new URLSearchParams(location.search).get('theme')) applyTheme(e.matches ? 'dark' : 'light');
+    });
+    window.addEventListener('message', e => {
+      if (e.data && (e.data.theme === 'dark' || e.data.theme === 'light')) applyTheme(e.data.theme);
+    });
+  })();
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  const R = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = id => document.getElementById(id);
+  const wait = ms => R ? Promise.resolve() : new Promise(r => setTimeout(r, ms));
+
+  let _sb1color = '#e2e0dc', _sb2color = '#e2e0dc';
+  function updateStatusDots() {
+    const dark = document.documentElement.classList.contains('dark');
+    const onColor  = dark ? '#5573ff' : '#0019FF';
+    const offColor = dark ? 'rgba(255,255,255,0.1)' : '#e2e0dc';
+    const d1 = $('sb-dot1'), d2 = $('sb-dot2');
+    if (d1) d1.setAttribute('fill', _sb1color === 'on' ? onColor : offColor);
+    if (d2) d2.setAttribute('fill', _sb2color === 'on' ? onColor : offColor);
+  }
+
+  function status(l1, l2, d1 = 'off', d2 = 'off') {
+    const e1 = $('sb-l1'), e2 = $('sb-l2');
+    if (e1) e1.textContent = l1 || '';
+    if (e2) e2.textContent = l2 || '';
+    _sb1color = d1; _sb2color = d2;
+    updateStatusDots();
+  }
+
+  function fadeIn(id, ms = 280) {
+    const el = $(id); if (!el) return Promise.resolve();
+    if (R) { el.setAttribute('opacity', 1); return Promise.resolve(); }
+    return new Promise(res => {
+      const t0 = performance.now();
+      (function tick(now) {
+        const p = Math.min((now - t0) / ms, 1);
+        el.setAttribute('opacity', 1 - Math.pow(1 - p, 2.2));
+        p < 1 ? requestAnimationFrame(tick) : res();
+      })(t0);
+    });
+  }
+
+  function setOp(id, v) { const e=$(id); if(e) e.setAttribute('opacity', v); }
+
+  function fanOut(pkts, ams, lnIds, lblId) {
+    if (R) { lnIds.forEach(id => setOp(id,1)); if(lblId) setOp(lblId,1); return Promise.resolve(); }
+    return new Promise(res => {
+      lnIds.forEach(id => setOp(id, 1));
+      pkts.forEach((id,i) => {
+        const p=$(id), a=$(ams[i]);
+        if(p&&a) { p.setAttribute('opacity',1); a.beginElement(); }
+      });
+      setTimeout(() => {
+        pkts.forEach(id => setOp(id,0));
+        if (lblId) fadeIn(lblId, 160);
+        res();
+      }, 550);
+    });
+  }
+
+  function pulse(ids) {
+    if (R) return Promise.resolve();
+    return Promise.all(ids.map(id => new Promise(res => {
+      const el=$(id); if(!el){res();return;}
+      el.animate(
+        [{opacity:0,r:20},{opacity:0.5,r:28},{opacity:0,r:38}],
+        {duration:500,easing:'ease-out',fill:'forwards'}
+      );
+      setTimeout(res, 510);
+    })));
+  }
+
+  // ── Animation sequence ─────────────────────────────────────────────────────
+  async function animate() {
+    status('Client sends a query', '');
+    await fadeIn('nd-client', 320); await wait(220);
+    setOp('ln-a', 1); await wait(160);
+
+    status('Query Coordinator receives the request', 'will orchestrate two passes across all shards');
+    await fadeIn('nd-coord', 300); await wait(300);
+
+    await fadeIn('div-p1', 250); await wait(160);
+    status('Pass 1: fan out to all shards simultaneously', 'each shard scans its local index segment');
+    await fanOut(['pk-p1d0','pk-p1d1','pk-p1d2'],['am-p1d0','am-p1d1','am-p1d2'],['ln-p1d0','ln-p1d1','ln-p1d2'],'lbl-query');
+
+    await fadeIn('nd-slabs-1', 220);
+    await pulse(['pu-p1-0','pu-p1-1','pu-p1-2']);
+
+    await wait(100);
+    status('Shards return local document statistics', 'term frequencies and document counts');
+    await fanOut(['pk-p1u0','pk-p1u1','pk-p1u2'],['am-p1u0','am-p1u1','am-p1u2'],['ln-p1u0','ln-p1u1','ln-p1u2'],'lbl-stats');
+
+    await wait(120);
+    status('Coordinator merges into global BM25 parameters', '', 'on', 'off');
+    await fadeIn('nd-stats', 360); await wait(200);
+    await fadeIn('nd-stats-fields', 280);
+
+    await wait(380);
+    setOp('ln-b', 1); await wait(120);
+    await fadeIn('div-p2', 250); await wait(160);
+    status('Pass 2: broadcast global IDF to all shards', 'every shard scores using the same parameters', 'off', 'on');
+    await fanOut(['pk-p2d0','pk-p2d1','pk-p2d2'],['am-p2d0','am-p2d1','am-p2d2'],['ln-p2d0','ln-p2d1','ln-p2d2'],'lbl-idf');
+
+    await fadeIn('nd-slabs-2', 220);
+    await pulse(['pu-p2-0','pu-p2-1','pu-p2-2']);
+
+    await wait(100);
+    status('Shards return their locally scored top-k docs', 'coordinator merges into a single global ranking', 'off', 'on');
+    await fanOut(['pk-p2u0','pk-p2u1','pk-p2u2'],['am-p2u0','am-p2u1','am-p2u2'],['ln-p2u0','ln-p2u1','ln-p2u2'],'lbl-topk');
+
+    await wait(150);
+    await fadeIn('nd-results', 320); await wait(180);
+    setOp('ln-c', 1); await wait(150);
+    await fadeIn('nd-final', 280);
+
+    status('Globally accurate BM25 — two passes, one consistent IDF',
+      'naive per-shard scoring would use different IDF values', 'on', 'on');
+  }
+
+  if (R) {
+    ['nd-client','ln-a','nd-coord','div-p1','nd-slabs-1',
+     'ln-p1d0','ln-p1d1','ln-p1d2','ln-p1u0','ln-p1u1','ln-p1u2','lbl-query','lbl-stats',
+     'nd-stats','nd-stats-fields','ln-b','div-p2','nd-slabs-2',
+     'ln-p2d0','ln-p2d1','ln-p2d2','ln-p2u0','ln-p2u1','ln-p2u2','lbl-idf','lbl-topk',
+     'nd-results','ln-c','nd-final',
+    ].forEach(id => setOp(id, 1));
+    status('Globally accurate BM25 — two passes, one consistent IDF',
+      'naive per-shard scoring would use different IDF values','on','on');
+  } else {
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) animate();
+    }, { threshold: 0.2 }).observe(document.querySelector('.outer'));
+  }
+})();
+</script>
+</body>
+</html>
