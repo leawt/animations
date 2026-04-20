@@ -478,45 +478,53 @@
   // ── Animation sequence ─────────────────────────────────────────────────────
   async function animate() {
     status('Client sends a query', '');
-    await fadeIn('nd-client', 320); await wait(220);
-    setOp('ln-a', 1); await wait(160);
+    await wait(700);
+    await fadeIn('nd-client', 320); await wait(280);
+    setOp('ln-a', 1); await wait(500);
 
     status('Query Coordinator receives the request', 'will orchestrate two passes across all shards');
-    await fadeIn('nd-coord', 300); await wait(300);
+    await wait(900);
+    await fadeIn('nd-coord', 300); await wait(500);
 
-    await fadeIn('div-p1', 250); await wait(160);
+    await fadeIn('div-p1', 250); await wait(300);
     status('Pass 1: fan out to all shards simultaneously', 'each shard scans its local index segment');
+    await wait(800);
     await fanOut(['pk-p1d0','pk-p1d1','pk-p1d2'],['am-p1d0','am-p1d1','am-p1d2'],['ln-p1d0','ln-p1d1','ln-p1d2'],'lbl-query');
 
     await fadeIn('nd-slabs-1', 220);
     await pulse(['pu-p1-0','pu-p1-1','pu-p1-2']);
 
-    await wait(100);
+    await wait(600);
     status('Shards return local document statistics', 'term frequencies and document counts');
+    await wait(800);
     await fanOut(['pk-p1u0','pk-p1u1','pk-p1u2'],['am-p1u0','am-p1u1','am-p1u2'],['ln-p1u0','ln-p1u1','ln-p1u2'],'lbl-stats');
 
-    await wait(120);
+    await wait(500);
     status('Coordinator merges into global BM25 parameters', '', 'on', 'off');
-    await fadeIn('nd-stats', 360); await wait(200);
+    await wait(700);
+    await fadeIn('nd-stats', 360); await wait(280);
     await fadeIn('nd-stats-fields', 280);
 
-    await wait(380);
-    setOp('ln-b', 1); await wait(120);
-    await fadeIn('div-p2', 250); await wait(160);
+    await wait(900);
+    setOp('ln-b', 1); await wait(200);
+    await fadeIn('div-p2', 250); await wait(350);
     status('Pass 2: broadcast global IDF to all shards', 'every shard scores using the same parameters', 'off', 'on');
+    await wait(800);
     await fanOut(['pk-p2d0','pk-p2d1','pk-p2d2'],['am-p2d0','am-p2d1','am-p2d2'],['ln-p2d0','ln-p2d1','ln-p2d2'],'lbl-idf');
 
     await fadeIn('nd-slabs-2', 220);
     await pulse(['pu-p2-0','pu-p2-1','pu-p2-2']);
 
-    await wait(100);
+    await wait(600);
     status('Shards return their locally scored top-k docs', 'coordinator merges into a single global ranking', 'off', 'on');
+    await wait(800);
     await fanOut(['pk-p2u0','pk-p2u1','pk-p2u2'],['am-p2u0','am-p2u1','am-p2u2'],['ln-p2u0','ln-p2u1','ln-p2u2'],'lbl-topk');
 
-    await wait(150);
-    await fadeIn('nd-results', 320); await wait(180);
-    setOp('ln-c', 1); await wait(150);
+    await wait(400);
+    await fadeIn('nd-results', 320); await wait(280);
+    setOp('ln-c', 1); await wait(200);
     await fadeIn('nd-final', 280);
+    await wait(400);
 
     status('Globally accurate BM25 — two passes, one consistent IDF',
       'naive per-shard scoring would use different IDF values', 'on', 'on');
