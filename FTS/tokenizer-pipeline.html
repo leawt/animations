@@ -105,14 +105,14 @@
     .input-field {
       flex: 1; min-width: 0;
       font-family: 'JetBrains Mono', monospace; font-size: 11px;
-      color: var(--text); border: 1px solid var(--border); border-radius: 4px;
+      color: var(--text); border: 1px solid var(--border); border-radius: 0;
       padding: 6px 10px; outline: none; background: var(--input-bg);
       transition: border-color 0.15s, background 0.25s, color 0.25s;
     }
     .input-field:focus { border-color: var(--blue-focus); }
     .run-btn {
       font-family: 'JetBrains Mono', monospace; font-size: 10px;
-      color: var(--blue); border: 1px solid var(--blue-btn); border-radius: 4px;
+      color: var(--blue); border: 1px solid var(--blue-btn); border-radius: 0;
       padding: 6px 11px; background: transparent; cursor: pointer; flex-shrink: 0;
       transition: background 0.15s, color 0.25s, border-color 0.25s;
     }
@@ -173,7 +173,7 @@
     .card-tokens { display: flex; flex-wrap: wrap; gap: 6px; min-height: 48px; }
     .token {
       font-family: 'JetBrains Mono', monospace; font-size: 11px;
-      padding: 4px 9px; border-radius: 4px;
+      padding: 4px 9px; border-radius: 0;
       border: 1px solid var(--border2); color: var(--text); background: var(--token-bg);
       opacity: 0; transform: translateY(4px);
       transition: opacity 0.18s ease, transform 0.18s ease,
@@ -195,7 +195,7 @@
     .output-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); }
     .output-chip {
       font-family: 'JetBrains Mono', monospace; font-size: 10px;
-      padding: 3px 9px; border-radius: 4px;
+      padding: 3px 9px; border-radius: 0;
       background: var(--chip-bg); color: var(--chip-text);
       transition: background 0.25s;
     }
