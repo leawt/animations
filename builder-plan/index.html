@@ -1,460 +1,469 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Pinecone Builder Plan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pinecone Builder Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --stage-w: 1200;
+      --stage-h: 630;
+    }
 
-  html {
-    height: 100%;
-    background: #ffffff;
-  }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
-    height: 100%;
-    margin: 0;
-    background: #ffffff;
-    font-family: 'Inter', system-ui, sans-serif;
-    overflow: hidden;
-    position: relative;
-  }
+    html {
+      height: 100%;
+      overflow: hidden;
+      background: #fff;
+    }
 
-  /* Fills the iframe; inner stage is scaled + centered for narrow embeds */
-  #embed-root {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 100%;
-    overflow: hidden;
-  }
+    body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #fff;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
 
-  #embed-stage {
-    position: absolute;
-    width: 1200px;
-    height: 630px;
-    left: 0;
-    top: 0;
-    transform-origin: top left;
-    background: #ffffff;
-  }
+    /* Fills the iframe viewport (percent heights alone often collapse inside embeds) */
+    #embed-root {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #fff;
+    }
 
-  .stage {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 40px;
-  }
+    /* Fixed design size; scale + center via script */
+    #embed-stage {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1200px;
+      height: 630px;
+      margin: 0;
+      transform-origin: center center;
+      background: #fff;
+    }
 
-  /* ── Headline ── */
-  .headline {
-    text-align: center;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 500ms ease, transform 500ms cubic-bezier(0.22,1,0.36,1);
-  }
-  .headline.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    .stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
 
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #002BFF;
-    margin-bottom: 10px;
-  }
-  .eyebrow-dot {
-    width: 6px; height: 6px;
-    background: #002BFF;
-    border-radius: 50%;
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.65); }
-  }
+    .headline {
+      text-align: center;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 500ms ease, transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .headline.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-  h1 {
-    font-size: 36px;
-    font-weight: 700;
-    color: #0a0a0a;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-  }
-  h1 em {
-    font-style: normal;
-    color: #002BFF;
-  }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #002BFF;
+      margin-bottom: 10px;
+    }
+    .eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      background: #002BFF;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.65); }
+    }
 
-  /* ── Cards wrapper ── */
-  .cards-wrapper {
-    position: relative;
-    width: 1040px;
-    height: 272px;
-  }
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      color: #0a0a0a;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    h1 em {
+      font-style: normal;
+      color: #002BFF;
+    }
 
-  /* ── Cards ── */
-  .card {
-    position: absolute;
-    width: 232px;
-    height: 260px;
-    background: white;
-    border: 1px solid #e2e2e2;
-    border-radius: 0;
-    padding: 22px 20px 20px;
-    opacity: 0;
-    will-change: transform, left, opacity;
-  }
+    .cards-wrapper {
+      position: relative;
+      width: 1040px;
+      height: 272px;
+    }
 
-  .card.builder {
-    border-color: #002BFF;
-    border-width: 1.5px;
-    box-shadow: 0 8px 32px rgba(0,43,255,0.10);
-  }
+    .card {
+      position: absolute;
+      width: 232px;
+      height: 260px;
+      background: #fff;
+      border: 1px solid #e2e2e2;
+      border-radius: 0;
+      padding: 22px 20px 20px;
+      opacity: 0;
+      will-change: transform, left, opacity;
+    }
 
-  /* card header row: tier name + optional badge */
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
+    .card.builder {
+      border-color: #002BFF;
+      border-width: 1.5px;
+      box-shadow: 0 8px 32px rgba(0, 43, 255, 0.10);
+    }
 
-  .card-tier {
-    font-size: 26px;
-    font-weight: 700;
-    color: #0a0a0a;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
 
-  .badge-popular {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid #002BFF;
-    border-radius: 100px;
-    padding: 2px 10px;
-    font-size: 10px;
-    font-weight: 500;
-    color: #002BFF;
-    letter-spacing: 0.01em;
-    flex-shrink: 0;
-    margin-top: 4px;
-  }
+    .card-tier {
+      font-size: 26px;
+      font-weight: 700;
+      color: #0a0a0a;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
 
-  .card-desc {
-    font-size: 13px;
-    color: #666;
-    line-height: 1.45;
-    margin-bottom: 14px;
-    min-height: 38px;
-  }
+    .badge-popular {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #002BFF;
+      border-radius: 100px;
+      padding: 2px 10px;
+      font-size: 10px;
+      font-weight: 500;
+      color: #002BFF;
+      letter-spacing: 0.01em;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
 
-  /* CTA button */
-  .card-btn {
-    width: 100%;
-    padding: 9px 0;
-    border-radius: 0;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid #002BFF;
-    color: #002BFF;
-    background: transparent;
-    margin-bottom: 14px;
-    display: block;
-  }
+    .card-desc {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.45;
+      margin-bottom: 14px;
+      min-height: 38px;
+    }
 
-  .card.builder .card-btn,
-  .card-btn.filled {
-    background: #002BFF;
-    color: white;
-    border-color: #002BFF;
-    font-weight: 600;
-  }
+    .card-btn {
+      width: 100%;
+      padding: 9px 0;
+      border-radius: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid #002BFF;
+      color: #002BFF;
+      background: transparent;
+      margin-bottom: 14px;
+      display: block;
+    }
 
-  /* Price block */
-  .card-price {
-    font-size: 20px;
-    font-weight: 700;
-    color: #002BFF;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
+    .card.builder .card-btn,
+    .card-btn.filled {
+      background: #002BFF;
+      color: #fff;
+      border-color: #002BFF;
+      font-weight: 600;
+    }
 
-  .card-price-sub {
-    font-size: 11px;
-    font-weight: 400;
-    color: #999;
-    margin-left: 5px;
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 2px;
-    vertical-align: baseline;
-    position: relative;
-    top: -1px;
-  }
+    .card-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #002BFF;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
 
-  /* "NEW" label inline with tier */
-  .badge-new {
-    display: inline-flex;
-    align-items: center;
-    background: #002BFF;
-    border-radius: 100px;
-    padding: 2px 8px;
-    font-size: 9px;
-    font-weight: 700;
-    color: white;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    flex-shrink: 0;
-    margin-top: 6px;
-  }
+    .card-price-sub {
+      font-size: 11px;
+      font-weight: 400;
+      color: #999;
+      margin-left: 5px;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 2px;
+      vertical-align: baseline;
+      position: relative;
+      top: -1px;
+    }
 
-  /* landing shadow pulse (no rounded ring) */
-  .card.builder.landed {
-    animation: shadow-pulse 600ms ease-out forwards;
-  }
-  @keyframes shadow-pulse {
-    0%   { box-shadow: 0 8px 32px rgba(0,43,255,0.10); }
-    40%  { box-shadow: 0 0 0 8px rgba(0,43,255,0.08), 0 8px 32px rgba(0,43,255,0.14); }
-    100% { box-shadow: 0 8px 32px rgba(0,43,255,0.10); }
-  }
+    .badge-new {
+      display: inline-flex;
+      align-items: center;
+      background: #002BFF;
+      border-radius: 100px;
+      padding: 2px 8px;
+      font-size: 9px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
 
-  /* ── Logo ── */
-  .logo {
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    color: rgba(0,0,0,0.2);
-    letter-spacing: 0.03em;
-  }
-</style>
+    .card.builder.landed {
+      animation: shadow-pulse 600ms ease-out forwards;
+    }
+    @keyframes shadow-pulse {
+      0%   { box-shadow: 0 8px 32px rgba(0, 43, 255, 0.10); }
+      40%  { box-shadow: 0 0 0 8px rgba(0, 43, 255, 0.08), 0 8px 32px rgba(0, 43, 255, 0.14); }
+      100% { box-shadow: 0 8px 32px rgba(0, 43, 255, 0.10); }
+    }
+
+    .logo {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.2);
+      letter-spacing: 0.03em;
+    }
+  </style>
 </head>
 <body>
 
-<div id="embed-root">
-  <div id="embed-stage">
-
-  <div class="stage">
-    <div class="headline" id="headline">
-      <div class="eyebrow"><div class="eyebrow-dot"></div>New plan</div>
-      <h1>Introducing <em>Builder</em> — $20/month flat</h1>
-    </div>
-
-    <div class="cards-wrapper">
-
-      <div class="card" id="cardStarter">
-        <div class="card-header">
-          <div class="card-tier">Starter</div>
+  <div id="embed-root">
+    <div id="embed-stage" aria-label="Pinecone pricing animation">
+      <div class="stage">
+        <div class="headline" id="headline">
+          <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>New plan</div>
+          <h1>Introducing <em>Builder</em> — $20/month flat</h1>
         </div>
-        <div class="card-desc">For trying out and for small applications.</div>
-        <div class="card-btn">Current</div>
-        <div class="card-price">Free</div>
+
+        <div class="cards-wrapper">
+          <div class="card" id="cardStarter">
+            <div class="card-header">
+              <div class="card-tier">Starter</div>
+            </div>
+            <div class="card-desc">For trying out and for small applications.</div>
+            <div class="card-btn">Current</div>
+            <div class="card-price">Free</div>
+          </div>
+
+          <div class="card builder" id="cardBuilder">
+            <div class="card-header">
+              <div class="card-tier">Builder</div>
+              <div class="badge-new">New</div>
+            </div>
+            <div class="card-desc">For solo developers and small teams.</div>
+            <div class="card-btn">Start with 1 month free</div>
+            <div class="card-price">$20/month flat</div>
+          </div>
+
+          <div class="card" id="cardStandard">
+            <div class="card-header">
+              <div class="card-tier">Standard</div>
+              <div class="badge-popular">Popular</div>
+            </div>
+            <div class="card-desc">For production applications at any scale.</div>
+            <div class="card-btn filled">Upgrade</div>
+            <div class="card-price">$50/month<span class="card-price-sub">min. usage</span></div>
+          </div>
+
+          <div class="card" id="cardEnterprise">
+            <div class="card-header">
+              <div class="card-tier">Enterprise</div>
+            </div>
+            <div class="card-desc">For mission-critical production applications.</div>
+            <div class="card-btn filled">Upgrade</div>
+            <div class="card-price">$500/month<span class="card-price-sub">min. usage</span></div>
+          </div>
+        </div>
       </div>
 
-      <div class="card builder" id="cardBuilder">
-        <div class="card-header">
-          <div class="card-tier">Builder</div>
-          <div class="badge-new">New</div>
-        </div>
-        <div class="card-desc">For solo developers and small teams.</div>
-        <div class="card-btn">Start with 1 month free</div>
-        <div class="card-price">$20/month flat</div>
-      </div>
-
-      <div class="card" id="cardStandard">
-        <div class="card-header">
-          <div class="card-tier">Standard</div>
-          <div class="badge-popular">Popular</div>
-        </div>
-        <div class="card-desc">For production applications at any scale.</div>
-        <div class="card-btn filled">Upgrade</div>
-        <div class="card-price">$50/month<span class="card-price-sub">min. usage</span></div>
-      </div>
-
-      <div class="card" id="cardEnterprise">
-        <div class="card-header">
-          <div class="card-tier">Enterprise</div>
-        </div>
-        <div class="card-desc">For mission-critical production applications.</div>
-        <div class="card-btn filled">Upgrade</div>
-        <div class="card-price">$500/month<span class="card-price-sub">min. usage</span></div>
-      </div>
-
+      <div class="logo">pinecone.io</div>
     </div>
   </div>
 
-  <div class="logo">pinecone.io</div>
+  <script>
+    const STAGE_W = 1200;
+    const STAGE_H = 630;
 
-  </div>
-</div>
+    function viewportWH() {
+      const vv = window.visualViewport;
+      let w = vv && vv.width > 0 ? vv.width : document.documentElement.clientWidth;
+      let h = vv && vv.height > 0 ? vv.height : document.documentElement.clientHeight;
+      if (!(w > 0)) w = window.innerWidth;
+      if (!(h > 0)) h = window.innerHeight;
+      const root = document.getElementById('embed-root');
+      if (root) {
+        const r = root.getBoundingClientRect();
+        if (r.width > 0) w = r.width;
+        if (r.height > 0) h = r.height;
+      }
+      return { w: Math.max(1, Math.round(w)), h: Math.max(1, Math.round(h)) };
+    }
 
-<script>
-  const STAGE_W = 1200;
-  const STAGE_H = 630;
+    function fitEmbed() {
+      const stage = document.getElementById('embed-stage');
+      if (!stage) return;
+      const { w: rw, h: rh } = viewportWH();
+      const s = Math.min(rw / STAGE_W, rh / STAGE_H, 1);
+      stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+    }
 
-  function fitEmbed() {
-    const root = document.getElementById('embed-root');
-    const stage = document.getElementById('embed-stage');
-    if (!root || !stage) return;
-    const rw = root.clientWidth || window.innerWidth;
-    const rh = root.clientHeight || window.innerHeight;
-    if (!rw || !rh) return;
-    const s = Math.min(rw / STAGE_W, rh / STAGE_H, 1);
-    stage.style.transform = `scale(${s})`;
-    stage.style.left = `${(rw - STAGE_W * s) / 2}px`;
-    stage.style.top = `${(rh - STAGE_H * s) / 2}px`;
-  }
+    function bindFit() {
+      fitEmbed();
+      const vv = window.visualViewport;
+      if (vv) {
+        vv.addEventListener('resize', fitEmbed);
+        vv.addEventListener('scroll', fitEmbed);
+      }
+      window.addEventListener('resize', fitEmbed);
+      const root = document.getElementById('embed-root');
+      if (root && typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(fitEmbed).observe(root);
+      }
+      requestAnimationFrame(() => {
+        fitEmbed();
+        requestAnimationFrame(fitEmbed);
+      });
+    }
 
-  fitEmbed();
-  const rootEl = document.getElementById('embed-root');
-  if (rootEl && typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(fitEmbed).observe(rootEl);
-  }
-  window.addEventListener('resize', fitEmbed);
+    bindFit();
+    window.addEventListener('load', fitEmbed);
 
-  const CARD_W = 232;
-  const GAP    = 18;
-  const CONT_W = 1040;
+    const CARD_W = 232;
+    const GAP = 18;
+    const CONT_W = 1040;
 
-  // Final 4-card layout
-  const totalW4 = 4 * CARD_W + 3 * GAP;
-  const pad4    = Math.round((CONT_W - totalW4) / 2);
-  const FINAL = {
-    starter:    pad4,
-    builder:    pad4 +     (CARD_W + GAP),
-    standard:   pad4 + 2 * (CARD_W + GAP),
-    enterprise: pad4 + 3 * (CARD_W + GAP),
-  };
+    const totalW4 = 4 * CARD_W + 3 * GAP;
+    const pad4 = Math.round((CONT_W - totalW4) / 2);
+    const FINAL = {
+      starter: pad4,
+      builder: pad4 + (CARD_W + GAP),
+      standard: pad4 + 2 * (CARD_W + GAP),
+      enterprise: pad4 + 3 * (CARD_W + GAP),
+    };
 
-  // Initial 3-card layout (starter | standard | enterprise)
-  const totalW3 = 3 * CARD_W + 2 * GAP;
-  const pad3    = Math.round((CONT_W - totalW3) / 2);
-  const INIT = {
-    starter:    pad3,
-    standard:   pad3 +     (CARD_W + GAP),
-    enterprise: pad3 + 2 * (CARD_W + GAP),
-  };
+    const totalW3 = 3 * CARD_W + 2 * GAP;
+    const pad3 = Math.round((CONT_W - totalW3) / 2);
+    const INIT = {
+      starter: pad3,
+      standard: pad3 + (CARD_W + GAP),
+      enterprise: pad3 + 2 * (CARD_W + GAP),
+    };
 
-  const headline   = document.getElementById('headline');
-  const starter    = document.getElementById('cardStarter');
-  const builder    = document.getElementById('cardBuilder');
-  const standard   = document.getElementById('cardStandard');
-  const enterprise = document.getElementById('cardEnterprise');
+    const headline = document.getElementById('headline');
+    const starter = document.getElementById('cardStarter');
+    const builder = document.getElementById('cardBuilder');
+    const standard = document.getElementById('cardStandard');
+    const enterprise = document.getElementById('cardEnterprise');
 
-  const wait = ms => new Promise(r => setTimeout(r, ms));
+    const wait = ms => new Promise(r => setTimeout(r, ms));
 
-  function noTrans(...els) {
-    els.forEach(el => el.style.transition = 'none');
-  }
+    function noTrans(...els) {
+      els.forEach(el => { el.style.transition = 'none'; });
+    }
 
-  function withTrans(dur, ease, ...els) {
-    const t = `left ${dur}ms ${ease}, transform ${dur}ms ${ease}, opacity ${dur}ms ease`;
-    els.forEach(el => el.style.transition = t);
-  }
+    function withTrans(dur, ease, ...els) {
+      const t = `left ${dur}ms ${ease}, transform ${dur}ms ${ease}, opacity ${dur}ms ease`;
+      els.forEach(el => { el.style.transition = t; });
+    }
 
-  function place(el, left, ty = 0, opacity = 1) {
-    el.style.left      = left + 'px';
-    el.style.transform = `translateY(${ty}px)`;
-    el.style.opacity   = opacity;
-  }
+    function place(el, left, ty = 0, opacity = 1) {
+      el.style.left = left + 'px';
+      el.style.transform = `translateY(${ty}px)`;
+      el.style.opacity = opacity;
+    }
 
-  async function run() {
-    // ── RESET ──
-    noTrans(starter, builder, standard, enterprise);
-    headline.classList.remove('visible');
-    headline.style.transition = 'none';
-    headline.style.opacity    = '0';
-    headline.style.transform  = 'translateY(10px)';
-    builder.classList.remove('landed');
+    async function run() {
+      noTrans(starter, builder, standard, enterprise);
+      headline.classList.remove('visible');
+      headline.style.transition = 'none';
+      headline.style.opacity = '0';
+      headline.style.transform = 'translateY(10px)';
+      builder.classList.remove('landed');
 
-    place(starter,    INIT.starter,    0, 0);
-    place(standard,   INIT.standard,   0, 0);
-    place(enterprise, INIT.enterprise, 0, 0);
-    place(builder,    FINAL.builder,  300, 0);
+      place(starter, INIT.starter, 0, 0);
+      place(standard, INIT.standard, 0, 0);
+      place(enterprise, INIT.enterprise, 0, 0);
+      place(builder, FINAL.builder, 300, 0);
 
-    await wait(80);
+      await wait(80);
 
-    // ── PHASE 1: headline ──
-    headline.style.transition = 'opacity 620ms ease, transform 620ms cubic-bezier(0.22,1,0.36,1)';
-    headline.classList.add('visible');
+      headline.style.transition = 'opacity 620ms ease, transform 620ms cubic-bezier(0.22, 1, 0.36, 1)';
+      headline.classList.add('visible');
 
-    // ── PHASE 1b: 3 cards rise in (staggered) ──
-    await wait(300);
+      await wait(300);
 
-    withTrans(640, 'cubic-bezier(0.22,1,0.36,1)', starter);
-    place(starter, INIT.starter, 0, 1);
+      withTrans(640, 'cubic-bezier(0.22, 1, 0.36, 1)', starter);
+      place(starter, INIT.starter, 0, 1);
 
-    await wait(90);
-    withTrans(640, 'cubic-bezier(0.22,1,0.36,1)', standard);
-    place(standard, INIT.standard, 0, 1);
+      await wait(90);
+      withTrans(640, 'cubic-bezier(0.22, 1, 0.36, 1)', standard);
+      place(standard, INIT.standard, 0, 1);
 
-    await wait(90);
-    withTrans(640, 'cubic-bezier(0.22,1,0.36,1)', enterprise);
-    place(enterprise, INIT.enterprise, 0, 1);
+      await wait(90);
+      withTrans(640, 'cubic-bezier(0.22, 1, 0.36, 1)', enterprise);
+      place(enterprise, INIT.enterprise, 0, 1);
 
-    // ── HOLD ──
-    await wait(2000);
+      await wait(2000);
 
-    // ── PHASE 2: cards shift apart, gap opens ──
-    withTrans(620, 'cubic-bezier(0.4,0,0.2,1)', starter, standard, enterprise);
-    place(starter,    FINAL.starter,    0, 1);
-    place(standard,   FINAL.standard,   0, 1);
-    place(enterprise, FINAL.enterprise, 0, 1);
+      withTrans(620, 'cubic-bezier(0.4, 0, 0.2, 1)', starter, standard, enterprise);
+      place(starter, FINAL.starter, 0, 1);
+      place(standard, FINAL.standard, 0, 1);
+      place(enterprise, FINAL.enterprise, 0, 1);
 
-    await wait(660);
+      await wait(660);
 
-    // ── PHASE 3: builder rises with spring ──
-    withTrans(800, 'cubic-bezier(0.34,1.56,0.64,1)', builder);
-    place(builder, FINAL.builder, 0, 1);
+      withTrans(800, 'cubic-bezier(0.34, 1.56, 0.64, 1)', builder);
+      place(builder, FINAL.builder, 0, 1);
 
-    await wait(820);
+      await wait(820);
 
-    // landing pulse
-    builder.classList.add('landed');
+      builder.classList.add('landed');
 
-    // ── HOLD complete state ──
-    await wait(4000);
+      await wait(4000);
 
-    // ── PHASE 4: fade out ──
-    const fadeT = 'opacity 540ms ease, transform 540ms ease';
-    [starter, builder, standard, enterprise].forEach(el => {
-      el.style.transition = fadeT;
-      el.style.opacity    = '0';
-      el.style.transform  = 'translateY(8px)';
+      const fadeT = 'opacity 540ms ease, transform 540ms ease';
+      [starter, builder, standard, enterprise].forEach(el => {
+        el.style.transition = fadeT;
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+      });
+      headline.style.transition = 'opacity 540ms ease, transform 540ms ease';
+      headline.style.opacity = '0';
+      headline.style.transform = 'translateY(6px)';
+
+      await wait(660);
+      run();
+    }
+
+    document.fonts.ready.then(() => {
+      fitEmbed();
+      run();
     });
-    headline.style.transition = 'opacity 540ms ease, transform 540ms ease';
-    headline.style.opacity    = '0';
-    headline.style.transform  = 'translateY(6px)';
-
-    await wait(660);
-    run();
-  }
-
-  // wait for Inter to load before starting (re-fit after layout)
-  document.fonts.ready.then(() => {
-    fitEmbed();
-    run();
-  });
-</script>
+  </script>
 </body>
 </html>
