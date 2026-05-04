@@ -9,13 +9,37 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html {
+    height: 100%;
+    background: #ffffff;
+  }
+
   body {
-    width: 1200px;
-    height: 630px;
+    height: 100%;
+    margin: 0;
     background: #ffffff;
     font-family: 'Inter', system-ui, sans-serif;
     overflow: hidden;
     position: relative;
+  }
+
+  /* Fills the iframe; inner stage is scaled + centered for narrow embeds */
+  #embed-root {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  #embed-stage {
+    position: absolute;
+    width: 1200px;
+    height: 630px;
+    left: 0;
+    top: 0;
+    transform-origin: top left;
+    background: #ffffff;
   }
 
   .stage {
@@ -227,6 +251,9 @@
 </head>
 <body>
 
+<div id="embed-root">
+  <div id="embed-stage">
+
   <div class="stage">
     <div class="headline" id="headline">
       <div class="eyebrow"><div class="eyebrow-dot"></div>New plan</div>
@@ -278,7 +305,33 @@
 
   <div class="logo">pinecone.io</div>
 
+  </div>
+</div>
+
 <script>
+  const STAGE_W = 1200;
+  const STAGE_H = 630;
+
+  function fitEmbed() {
+    const root = document.getElementById('embed-root');
+    const stage = document.getElementById('embed-stage');
+    if (!root || !stage) return;
+    const rw = root.clientWidth || window.innerWidth;
+    const rh = root.clientHeight || window.innerHeight;
+    if (!rw || !rh) return;
+    const s = Math.min(rw / STAGE_W, rh / STAGE_H, 1);
+    stage.style.transform = `scale(${s})`;
+    stage.style.left = `${(rw - STAGE_W * s) / 2}px`;
+    stage.style.top = `${(rh - STAGE_H * s) / 2}px`;
+  }
+
+  fitEmbed();
+  const rootEl = document.getElementById('embed-root');
+  if (rootEl && typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(fitEmbed).observe(rootEl);
+  }
+  window.addEventListener('resize', fitEmbed);
+
   const CARD_W = 232;
   const GAP    = 18;
   const CONT_W = 1040;
@@ -397,8 +450,11 @@
     run();
   }
 
-  // wait for Inter to load before starting
-  document.fonts.ready.then(() => run());
+  // wait for Inter to load before starting (re-fit after layout)
+  document.fonts.ready.then(() => {
+    fitEmbed();
+    run();
+  });
 </script>
 </body>
 </html>
