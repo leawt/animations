@@ -9,8 +9,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --stage-w: 1200;
-      --stage-h: 630;
+      /* Content-sized artboard: pad + 4×232 + 3×18 + pad */
+      --stage-w: 1062;
+      /* Tall enough for headline + cards + builder slide-in (translateY) */
+      --stage-h: 580;
+      --stage-pad-x: 40px;
+      --stage-pad-y: 32px;
+      --cards-row-w: 982;
       /* Space between the scaled stage and the iframe edges (Sanity embed) */
       --embed-inset: 24px;
     }
@@ -46,8 +51,8 @@
       position: absolute;
       left: var(--embed-inset);
       top: var(--embed-inset);
-      width: 1200px;
-      height: 630px;
+      width: var(--stage-w);
+      height: var(--stage-h);
       margin: 0;
       transform-origin: 0 0;
       background: #fff;
@@ -61,10 +66,12 @@
       align-items: flex-start;
       justify-content: flex-start;
       gap: 24px;
-      padding: 32px 40px;
+      padding: var(--stage-pad-y) var(--stage-pad-x);
     }
 
     .headline {
+      width: 100%;
+      max-width: 100%;
       text-align: left;
       opacity: 0;
       transform: translateY(10px);
@@ -112,8 +119,9 @@
 
     .cards-wrapper {
       position: relative;
-      width: 1040px;
+      width: var(--cards-row-w);
       height: 272px;
+      flex-shrink: 0;
     }
 
     .card {
@@ -239,18 +247,6 @@
       40%  { box-shadow: 0 0 0 8px rgba(0, 43, 255, 0.08), 0 8px 32px rgba(0, 43, 255, 0.14); }
       100% { box-shadow: 0 8px 32px rgba(0, 43, 255, 0.10); }
     }
-
-    .logo {
-      position: absolute;
-      bottom: 24px;
-      left: 40px;
-      transform: none;
-      font-family: 'Inter', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      color: rgba(0, 0, 0, 0.2);
-      letter-spacing: 0.03em;
-    }
   </style>
 </head>
 <body>
@@ -303,14 +299,18 @@
           </div>
         </div>
       </div>
-
-      <div class="logo">pinecone.io</div>
     </div>
   </div>
 
   <script>
-    const STAGE_W = 1200;
-    const STAGE_H = 630;
+    function stageDesignSize(stage) {
+      const cs = getComputedStyle(stage);
+      let w = parseFloat(cs.width);
+      let h = parseFloat(cs.height);
+      if (!Number.isFinite(w) || w <= 0) w = 1062;
+      if (!Number.isFinite(h) || h <= 0) h = 580;
+      return { w, h };
+    }
 
     function viewportWH() {
       const vv = window.visualViewport;
@@ -340,7 +340,8 @@
       const { w: rw, h: rh } = viewportWH();
       const availW = Math.max(1, rw - 2 * inset);
       const availH = Math.max(1, rh - 2 * inset);
-      const s = Math.min(availW / STAGE_W, availH / STAGE_H, 1);
+      const { w: sw, h: sh } = stageDesignSize(stage);
+      const s = Math.min(availW / sw, availH / sh, 1);
       stage.style.transform = `scale(${s})`;
     }
 
@@ -371,7 +372,6 @@
     /* Left-align the card row inside the wrapper (stage padding handles iframe margins) */
     const ROW_PAD = 0;
 
-    const totalW4 = 4 * CARD_W + 3 * GAP;
     const pad4 = ROW_PAD;
     const FINAL = {
       starter: pad4,
@@ -380,7 +380,6 @@
       enterprise: pad4 + 3 * (CARD_W + GAP),
     };
 
-    const totalW3 = 3 * CARD_W + 2 * GAP;
     const pad3 = ROW_PAD;
     const INIT = {
       starter: pad3,
