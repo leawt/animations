@@ -10,47 +10,71 @@
   <style>
     :root {
       /* Content-sized artboard: pad + 4×232 + 3×18 + pad */
-      --stage-w: 1062;
-      /* Tall enough for headline + cards + builder slide-in (translateY) */
-      --stage-h: 580;
+      --stage-w: 1062px;
+      /* Tight stack: compact headline + cards + builder entrance (see BUILDER_OFF_Y) */
+      --stage-h: 410px;
       --stage-pad-x: 40px;
-      --stage-pad-y: 32px;
-      --cards-row-w: 982;
-      /* Space between the scaled stage and the iframe edges (Sanity embed) */
-      --embed-inset: 24px;
+      --stage-pad-y: 12px;
+      --cards-row-w: 982px;
+      /* Smaller top gutter so the animation sits higher for shorter iframes */
+      --embed-inset-x: 16px;
+      --embed-inset-top: 6px;
+      --embed-inset-bottom: 12px;
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     html {
-      height: 100%;
-      overflow: hidden;
+      height: auto;
+      margin: 0;
+      overflow-x: hidden;
       background: #fff;
+      /* Prevent any UA/embed stylesheet from vertically centering short documents */
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
     }
 
     body {
-      height: 100%;
+      height: auto;
       margin: 0;
-      overflow: hidden;
+      min-height: 0;
+      overflow-x: hidden;
       background: #fff;
       font-family: 'Inter', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      flex: 0 0 auto;
     }
 
-    /* Fills the iframe viewport (percent heights alone often collapse inside embeds) */
+    /*
+      Sized by fitEmbed() to the scaled stage + insets so document scrollHeight matches
+      the animation (CMS iframe auto-height / embed scripts). Stage stays top-left — no
+      extra canvas that looks “centered” in a tall iframe.
+    */
     #embed-root {
-      position: fixed;
-      inset: 0;
+      position: relative;
       width: 100%;
-      height: 100%;
-      overflow: hidden;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
       background: #fff;
+      box-sizing: border-box;
+      flex: 0 0 auto;
+      align-self: flex-start;
+      /* Approximate layout before fitEmbed runs (avoid zero-height flash in embeds) */
+      min-height: calc(var(--stage-h) + var(--embed-inset-top) + var(--embed-inset-bottom));
     }
 
     /* Fixed design size; scale from top-left via script (fits iframe embeds) */
     #embed-stage {
       position: absolute;
-      left: var(--embed-inset);
-      top: var(--embed-inset);
+      left: var(--embed-inset-x);
+      top: var(--embed-inset-top);
       width: var(--stage-w);
       height: var(--stage-h);
       margin: 0;
@@ -65,7 +89,7 @@
       flex-direction: column;
       align-items: flex-start;
       justify-content: flex-start;
-      gap: 24px;
+      gap: 10px;
       padding: var(--stage-pad-y) var(--stage-pad-x);
     }
 
@@ -91,7 +115,7 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #002BFF;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
     .eyebrow-dot {
       width: 6px;
@@ -106,7 +130,7 @@
     }
 
     h1 {
-      font-size: 36px;
+      font-size: 32px;
       font-weight: 700;
       color: #0a0a0a;
       letter-spacing: -0.02em;
@@ -308,41 +332,67 @@
       let w = parseFloat(cs.width);
       let h = parseFloat(cs.height);
       if (!Number.isFinite(w) || w <= 0) w = 1062;
-      if (!Number.isFinite(h) || h <= 0) h = 580;
+      if (!Number.isFinite(h) || h <= 0) h = 410;
       return { w, h };
     }
 
+    /** Iframe inner viewport only — never use #embed-root rect (conflicts with intrinsic doc height). */
     function viewportWH() {
       const vv = window.visualViewport;
-      let w = vv && vv.width > 0 ? vv.width : document.documentElement.clientWidth;
-      let h = vv && vv.height > 0 ? vv.height : document.documentElement.clientHeight;
-      if (!(w > 0)) w = window.innerWidth;
-      if (!(h > 0)) h = window.innerHeight;
-      const root = document.getElementById('embed-root');
-      if (root) {
-        const r = root.getBoundingClientRect();
-        if (r.width > 0) w = r.width;
-        if (r.height > 0) h = r.height;
-      }
+      let w = vv && vv.width > 0 ? vv.width : window.innerWidth;
+      let h = vv && vv.height > 0 ? vv.height : window.innerHeight;
+      if (!(w > 0)) w = document.documentElement.clientWidth;
+      if (!(h > 0)) h = document.documentElement.clientHeight;
       return { w: Math.max(1, Math.round(w)), h: Math.max(1, Math.round(h)) };
     }
 
-    function embedInsetPx() {
-      const raw = getComputedStyle(document.documentElement).getPropertyValue('--embed-inset').trim();
-      const n = parseFloat(raw);
-      return Number.isFinite(n) ? n : 24;
+    function embedInsets() {
+      const root = document.documentElement;
+      const cs = getComputedStyle(root);
+      const x = parseFloat(cs.getPropertyValue('--embed-inset-x').trim());
+      const top = parseFloat(cs.getPropertyValue('--embed-inset-top').trim());
+      const bottom = parseFloat(cs.getPropertyValue('--embed-inset-bottom').trim());
+      return {
+        x: Number.isFinite(x) ? x : 16,
+        top: Number.isFinite(top) ? top : 6,
+        bottom: Number.isFinite(bottom) ? bottom : 12,
+      };
     }
 
     function fitEmbed() {
+      const root = document.getElementById('embed-root');
       const stage = document.getElementById('embed-stage');
-      if (!stage) return;
-      const inset = embedInsetPx();
-      const { w: rw, h: rh } = viewportWH();
-      const availW = Math.max(1, rw - 2 * inset);
-      const availH = Math.max(1, rh - 2 * inset);
+      if (!stage || !root) return;
+      const { x: insetX, top: insetTop, bottom: insetBottom } = embedInsets();
+      const { w: rw } = viewportWH();
+      const availW = Math.max(1, rw - 2 * insetX);
       const { w: sw, h: sh } = stageDesignSize(stage);
-      const s = Math.min(availW / sw, availH / sh, 1);
+      /*
+        Width-only scale: blog/CMS iframes are often given a tall default height. Using the
+        iframe viewport height in Math.min() caused letterboxing inside our doc (content
+        clustered toward the bottom). Scale to the column width; document height follows.
+      */
+      const s = Math.min(availW / sw, 1);
       stage.style.transform = `scale(${s})`;
+
+      const contentH = insetTop + sh * s + insetBottom;
+      root.style.height = contentH + 'px';
+      root.style.minHeight = contentH + 'px';
+      document.documentElement.style.height = contentH + 'px';
+      document.body.style.height = contentH + 'px';
+
+      notifyEmbedHeight();
+    }
+
+    /** Lets host pages / Sanity parent scripts resize the iframe to match content. */
+    function notifyEmbedHeight() {
+      try {
+        if (window.parent === window) return;
+        const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+        window.parent.postMessage({ source: 'pinecone-builder-plan-embed', height: h }, '*');
+      } catch (_) {
+        /* cross-origin restrictions */
+      }
     }
 
     function bindFit() {
@@ -353,10 +403,6 @@
         vv.addEventListener('scroll', fitEmbed);
       }
       window.addEventListener('resize', fitEmbed);
-      const root = document.getElementById('embed-root');
-      if (root && typeof ResizeObserver !== 'undefined') {
-        new ResizeObserver(fitEmbed).observe(root);
-      }
       requestAnimationFrame(() => {
         fitEmbed();
         requestAnimationFrame(fitEmbed);
@@ -386,6 +432,9 @@
       standard: pad3 + (CARD_W + GAP),
       enterprise: pad3 + 2 * (CARD_W + GAP),
     };
+
+    /** Vertical entrance offset for Builder card (keep ≤ stage slack for shorter embed height). */
+    const BUILDER_OFF_Y = 220;
 
     const headline = document.getElementById('headline');
     const starter = document.getElementById('cardStarter');
@@ -421,7 +470,7 @@
       place(starter, INIT.starter, 0, 0);
       place(standard, INIT.standard, 0, 0);
       place(enterprise, INIT.enterprise, 0, 0);
-      place(builder, FINAL.builder, 300, 0);
+      place(builder, FINAL.builder, BUILDER_OFF_Y, 0);
 
       await wait(80);
 
