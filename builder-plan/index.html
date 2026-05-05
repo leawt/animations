@@ -11,6 +11,8 @@
     :root {
       --stage-w: 1200;
       --stage-h: 630;
+      /* Space between the scaled stage and the iframe edges (Sanity embed) */
+      --embed-inset: 24px;
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -39,15 +41,15 @@
       background: #fff;
     }
 
-    /* Fixed design size; scale + center via script */
+    /* Fixed design size; scale from top-left via script (fits iframe embeds) */
     #embed-stage {
       position: absolute;
-      left: 50%;
-      top: 50%;
+      left: var(--embed-inset);
+      top: var(--embed-inset);
       width: 1200px;
       height: 630px;
       margin: 0;
-      transform-origin: center center;
+      transform-origin: 0 0;
       background: #fff;
     }
 
@@ -56,13 +58,14 @@
       inset: 0;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 40px;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 24px;
+      padding: 32px 40px;
     }
 
     .headline {
-      text-align: center;
+      text-align: left;
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 500ms ease, transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -240,8 +243,8 @@
     .logo {
       position: absolute;
       bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 40px;
+      transform: none;
       font-family: 'Inter', sans-serif;
       font-size: 12px;
       font-weight: 500;
@@ -324,12 +327,21 @@
       return { w: Math.max(1, Math.round(w)), h: Math.max(1, Math.round(h)) };
     }
 
+    function embedInsetPx() {
+      const raw = getComputedStyle(document.documentElement).getPropertyValue('--embed-inset').trim();
+      const n = parseFloat(raw);
+      return Number.isFinite(n) ? n : 24;
+    }
+
     function fitEmbed() {
       const stage = document.getElementById('embed-stage');
       if (!stage) return;
+      const inset = embedInsetPx();
       const { w: rw, h: rh } = viewportWH();
-      const s = Math.min(rw / STAGE_W, rh / STAGE_H, 1);
-      stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+      const availW = Math.max(1, rw - 2 * inset);
+      const availH = Math.max(1, rh - 2 * inset);
+      const s = Math.min(availW / STAGE_W, availH / STAGE_H, 1);
+      stage.style.transform = `scale(${s})`;
     }
 
     function bindFit() {
@@ -355,10 +367,12 @@
 
     const CARD_W = 232;
     const GAP = 18;
-    const CONT_W = 1040;
+
+    /* Left-align the card row inside the wrapper (stage padding handles iframe margins) */
+    const ROW_PAD = 0;
 
     const totalW4 = 4 * CARD_W + 3 * GAP;
-    const pad4 = Math.round((CONT_W - totalW4) / 2);
+    const pad4 = ROW_PAD;
     const FINAL = {
       starter: pad4,
       builder: pad4 + (CARD_W + GAP),
@@ -367,7 +381,7 @@
     };
 
     const totalW3 = 3 * CARD_W + 2 * GAP;
-    const pad3 = Math.round((CONT_W - totalW3) / 2);
+    const pad3 = ROW_PAD;
     const INIT = {
       starter: pad3,
       standard: pad3 + (CARD_W + GAP),
