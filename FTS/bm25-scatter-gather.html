@@ -27,12 +27,6 @@
       --lbl-text:    rgba(61,58,54,0.85);
       --div-line:    #e8e6e3;
       --div-text:    rgba(61,58,54,0.7);
-      --sb-fill:     rgba(0,25,255,0.025);
-      --sb-border:   rgba(0,25,255,0.08);
-      --sb-text:     rgba(61,58,54,0.85);
-      --sb-muted:    rgba(61,58,54,0.7);
-      --dot-on:      #0019FF;
-      --dot-off:     #e2e0dc;
       --conn-gray:   #d0cdc8;
     }
 
@@ -54,12 +48,6 @@
       --lbl-text:    rgba(222,218,213,0.85);
       --div-line:    rgba(255,255,255,0.08);
       --div-text:    rgba(222,218,213,0.65);
-      --sb-fill:     rgba(85,115,255,0.06);
-      --sb-border:   rgba(85,115,255,0.12);
-      --sb-text:     rgba(222,218,213,0.85);
-      --sb-muted:    rgba(222,218,213,0.68);
-      --dot-on:      #5573ff;
-      --dot-off:     rgba(255,255,255,0.1);
       --conn-gray:   rgba(255,255,255,0.2);
     }
 
@@ -120,14 +108,6 @@
       margin: 0 auto;
     }
 
-    #sb-l1, #sb-l2 {
-      font-size: 8.5px !important;
-    }
-
-    html.dark .sb-rect {
-      opacity: 0.82;
-    }
-
     /* Knock out dots behind glyphs (matches page bg in light/dark) */
     svg text {
       paint-order: stroke fill;
@@ -143,15 +123,12 @@
     .t-muted    { fill: var(--muted) !important; }
     .t-muted2   { fill: var(--muted2) !important; }
     .t-muted3   { fill: var(--muted3) !important; }
-    .t-sb       { fill: var(--sb-text) !important; }
-    .t-sb-muted { fill: var(--sb-muted) !important; }
     .t-lbl      { fill: var(--lbl-text) !important; }
     .t-div      { fill: var(--div-text) !important; }
 
     /* Dark mode node box fills and strokes */
     html.dark .nd-box     { fill: var(--node-fill) !important; stroke: var(--border) !important; }
     html.dark .nd-stats   { fill: var(--stats-fill) !important; stroke: var(--blue-border) !important; }
-    html.dark .sb-rect    { fill: var(--sb-fill) !important; stroke: var(--sb-border) !important; }
 
     /* Text colors */
     html.dark .t-primary  { fill: var(--text) !important; }
@@ -159,8 +136,6 @@
     html.dark .t-muted    { fill: var(--muted) !important; }
     html.dark .t-muted2   { fill: var(--muted2) !important; }
     html.dark .t-muted3   { fill: var(--muted3) !important; }
-    html.dark .t-sb       { fill: var(--sb-text) !important; }
-    html.dark .t-sb-muted { fill: var(--sb-muted) !important; }
     html.dark .t-lbl      { fill: var(--lbl-text) !important; }
     html.dark .t-lbl-blue { fill: var(--blue) !important; }
     html.dark .t-div      { fill: var(--div-text) !important; }
@@ -187,7 +162,7 @@
 <div class="bm25-page">
 <p class="section-heading">BM25 statistics for growing and dynamic data</p>
 <div class="outer" role="img" aria-label="BM25 scatter-gather: query terms to all slabs; each slab returns precomputed per-term statistics (lookup only); merged global statistics broadcast; each slab returns top-k">
-<svg viewBox="0 0 680 650"
+<svg viewBox="0 0 680 578"
      xmlns="http://www.w3.org/2000/svg"
      font-family="'JetBrains Mono', monospace"
      aria-hidden="true">
@@ -421,15 +396,6 @@
       fill="rgba(87,83,78,0.5)" letter-spacing="0.04em">RANKED RESULTS → CLIENT</text>
   </g>
 
-  <!-- ══ STATUS BAR ════════════════════════════════════════════════════════ -->
-  <g transform="translate(0, 36)">
-    <rect class="sb-rect" x="52" y="548" width="576" height="50" fill="rgba(0,25,255,0.018)" stroke="rgba(0,25,255,0.06)" stroke-width="1"/>
-    <circle id="sb-dot1" cx="72" cy="566" r="3" fill="#e2e0dc"/>
-    <circle id="sb-dot2" cx="72" cy="582" r="3" fill="#e2e0dc"/>
-    <text id="sb-l1" class="t-sb" x="84" y="570" font-size="8.5" fill="rgba(87,83,78,0.65)"> </text>
-    <text id="sb-l2" class="t-sb-muted" x="84" y="586" font-size="8.5" fill="rgba(87,83,78,0.42)"> </text>
-  </g>
-
 </svg>
 </div>
 </div>
@@ -443,8 +409,6 @@
   const $ = id => document.getElementById(id);
   const wait = ms => R ? Promise.resolve() : new Promise(r => setTimeout(r, ms));
 
-  let _sb1color = 'off', _sb2color = 'off';
-
   // ── Theme ──────────────────────────────────────────────────────────────────
   function applyTheme(t) {
     const dark = t === 'dark';
@@ -453,7 +417,6 @@
     const marker = dark ? 'url(#ah-gray-d)' : 'url(#ah-gray-l)';
     if (lnA) lnA.setAttribute('marker-end', marker);
     if (lnC) lnC.setAttribute('marker-end', marker);
-    updateStatusDots();
   }
 
   (function initTheme() {
@@ -467,22 +430,6 @@
       if (e.data && (e.data.theme === 'dark' || e.data.theme === 'light')) applyTheme(e.data.theme);
     });
   })();
-  function updateStatusDots() {
-    const dark = document.documentElement.classList.contains('dark');
-    const onColor  = dark ? '#5573ff' : '#0019FF';
-    const offColor = dark ? 'rgba(255,255,255,0.1)' : '#e2e0dc';
-    const d1 = $('sb-dot1'), d2 = $('sb-dot2');
-    if (d1) d1.setAttribute('fill', _sb1color === 'on' ? onColor : offColor);
-    if (d2) d2.setAttribute('fill', _sb2color === 'on' ? onColor : offColor);
-  }
-
-  function status(l1, l2, d1 = 'off', d2 = 'off') {
-    const e1 = $('sb-l1'), e2 = $('sb-l2');
-    if (e1) e1.textContent = l1 || '';
-    if (e2) e2.textContent = l2 || '';
-    _sb1color = d1; _sb2color = d2;
-    updateStatusDots();
-  }
 
   function fadeIn(id, ms = 280) {
     const el = $(id); if (!el) return Promise.resolve();
@@ -529,47 +476,35 @@
 
   // ── Animation sequence ─────────────────────────────────────────────────────
   async function animate() {
-    status('Client sends search terms', '');
     await wait(700);
     await fadeIn('nd-client', 320); await wait(280);
     setOp('ln-a', 1); await wait(500);
-
-    status('Query Coordinator receives the request', 'will scatter terms, gather stats, broadcast globals, gather top-k');
     await wait(900);
     await fadeIn('nd-coord', 300); await wait(500);
 
-    await fadeIn('div-p1', 250); await wait(300);
-    status('Pass 1: small message — query terms — to every slab', 'each slab returns stored per-term stats for those terms — precomputed in the slab, no scanning');
-    await wait(800);
+    await fadeIn('div-p1', 250); await wait(1100);
     await fanOut(['pk-p1d0','pk-p1d1','pk-p1d2'],['am-p1d0','am-p1d1','am-p1d2'],['ln-p1d0','ln-p1d1','ln-p1d2'],'lbl-query');
 
     await fadeIn('nd-slabs-1', 220);
     await pulse(['pu-p1-0','pu-p1-1','pu-p1-2']);
 
-    await wait(600);
-    status('Every slab returns term statistics', 'aggregates for the query terms are already materialized — fast retrieval per slab');
-    await wait(800);
+    await wait(1400);
     await fanOut(['pk-p1u0','pk-p1u1','pk-p1u2'],['am-p1u0','am-p1u1','am-p1u2'],['ln-p1u0','ln-p1u1','ln-p1u2'],'lbl-stats');
 
-    await wait(500);
-    status('Coordinator merges into merged global statistics', 'corpus-wide totals and IDF inputs', 'on', 'off');
-    await wait(700);
+    await wait(1200);
     await fadeIn('nd-stats', 360); await wait(280);
     await fadeIn('nd-stats-fields', 280);
 
     await wait(900);
     setOp('ln-b', 1); await wait(200);
     await fadeIn('div-p2', 250); await wait(350);
-    status('Pass 2: broadcast global statistics to all slabs', 'every slab scores with the same merged BM25 parameters');
     await wait(800);
     await fanOut(['pk-p2d0','pk-p2d1','pk-p2d2'],['am-p2d0','am-p2d1','am-p2d2'],['ln-p2d0','ln-p2d1','ln-p2d2'],'lbl-idf');
 
     await fadeIn('nd-slabs-2', 220);
     await pulse(['pu-p2-0','pu-p2-1','pu-p2-2']);
 
-    await wait(600);
-    status('Each slab returns its local top-k', 'coordinator merges into one globally consistent ranking', 'off', 'on');
-    await wait(800);
+    await wait(1400);
     await fanOut(['pk-p2u0','pk-p2u1','pk-p2u2'],['am-p2u0','am-p2u1','am-p2u2'],['ln-p2u0','ln-p2u1','ln-p2u2'],'lbl-topk');
 
     await wait(400);
@@ -577,9 +512,6 @@
     setOp('ln-c', 1); await wait(200);
     await fadeIn('nd-final', 280);
     await wait(400);
-
-    status('Globally accurate BM25 — terms, merged stats, broadcast, top-k',
-      'Per-slab shortcuts skew scores; corpus-wide merged statistics keep BM25 correct', 'on', 'on');
   }
 
   if (R) {
@@ -589,8 +521,6 @@
      'ln-p2d0','ln-p2d1','ln-p2d2','ln-p2u0','ln-p2u1','ln-p2u2','lbl-idf','lbl-topk',
      'nd-results','ln-c','nd-final',
     ].forEach(id => setOp(id, 1));
-    status('Globally accurate BM25 — terms, merged stats, broadcast, top-k',
-      'Per-slab shortcuts skew scores; corpus-wide merged statistics keep BM25 correct','on','on');
   } else {
     new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) animate();
