@@ -12,7 +12,7 @@
     :root {
       --bg:          #ffffff;
       --dot:         #cac8c4;
-      --dot-opacity: 0.22;
+      --dot-opacity: 0.11;
       --text:        #3d3a36;
       --muted:       rgba(61,58,54,0.82);
       --muted2:      rgba(61,58,54,0.7);
@@ -39,7 +39,7 @@
     html.dark {
       --bg:          #0f0e0b;
       --dot:         rgba(255,255,255,1);
-      --dot-opacity: 0.045;
+      --dot-opacity: 0.03;
       --text:        #dedad5;
       --muted:       rgba(222,218,213,0.82);
       --muted2:      rgba(222,218,213,0.68);
@@ -65,8 +65,9 @@
 
     body {
       background: var(--bg);
-      height: 640px;
-      overflow: hidden;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
       transition: background 0.25s;
     }
 
@@ -79,16 +80,52 @@
       pointer-events: none;
     }
 
+    .bm25-page {
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 28px 24px 36px;
+      box-sizing: border-box;
+    }
+
+    .section-heading {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin: 0 0 26px;
+      padding: 0 8px;
+      line-height: 1.5;
+    }
+
     .outer {
-      position: relative; z-index: 1;
-      width: 100%; height: 640px;
-      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
     }
 
     svg {
-      width: 100%; max-width: 680px;
-      height: 100%; max-height: 610px;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      max-height: none;
       display: block;
+      margin: 0 auto;
+    }
+
+    #sb-l1, #sb-l2 {
+      font-size: 8.5px !important;
+    }
+
+    html.dark .sb-rect {
+      opacity: 0.82;
     }
 
     /* Knock out dots behind glyphs (matches page bg in light/dark) */
@@ -147,8 +184,10 @@
   </style>
 </head>
 <body>
+<div class="bm25-page">
+<p class="section-heading">BM25 statistics for growing and dynamic data</p>
 <div class="outer" role="img" aria-label="BM25 scatter-gather: query terms to all slabs; each slab returns precomputed per-term statistics (lookup only); merged global statistics broadcast; each slab returns top-k">
-<svg viewBox="0 0 680 610"
+<svg viewBox="0 0 680 650"
      xmlns="http://www.w3.org/2000/svg"
      font-family="'JetBrains Mono', monospace"
      aria-hidden="true">
@@ -174,80 +213,80 @@
     </marker>
 
     <!-- Motion paths -->
-    <path id="m-p1d0" d="M340,113 C340,136 130,140 130,159"/>
-    <path id="m-p1d1" d="M340,113 L340,159"/>
-    <path id="m-p1d2" d="M340,113 C340,136 550,140 550,159"/>
-    <path id="m-p1u0" d="M130,200 C130,230 340,234 340,256"/>
-    <path id="m-p1u1" d="M340,200 L340,256"/>
-    <path id="m-p1u2" d="M550,200 C550,230 340,234 340,256"/>
-    <path id="m-p2d0" d="M340,326 C340,354 130,358 130,378"/>
-    <path id="m-p2d1" d="M340,326 L340,378"/>
-    <path id="m-p2d2" d="M340,326 C340,354 550,358 550,378"/>
-    <path id="m-p2u0" d="M130,420 C130,446 340,450 340,468"/>
-    <path id="m-p2u1" d="M340,420 L340,468"/>
-    <path id="m-p2u2" d="M550,420 C550,446 340,450 340,468"/>
+    <path id="m-p1d0" d="M340,113 C340,136 130,140 130,181"/>
+    <path id="m-p1d1" d="M340,113 L340,181"/>
+    <path id="m-p1d2" d="M340,113 C340,136 550,140 550,181"/>
+    <path id="m-p1u0" d="M130,222 C130,252 340,256 340,278"/>
+    <path id="m-p1u1" d="M340,222 L340,278"/>
+    <path id="m-p1u2" d="M550,222 C550,252 340,256 340,278"/>
+    <path id="m-p2d0" d="M340,348 C340,376 130,380 130,400"/>
+    <path id="m-p2d1" d="M340,348 L340,400"/>
+    <path id="m-p2d2" d="M340,348 C340,376 550,380 550,400"/>
+    <path id="m-p2u0" d="M130,442 C130,468 340,472 340,490"/>
+    <path id="m-p2u1" d="M340,442 L340,490"/>
+    <path id="m-p2u2" d="M550,442 C550,468 340,472 340,490"/>
   </defs>
 
   <!-- ══ CONNECTOR LINES ══════════════════════════════════════════════════ -->
   <line id="ln-a" class="ln-gray" x1="340" y1="57" x2="340" y2="75"
     stroke="#d0cdc8" stroke-width="1" marker-end="url(#ah-gray-l)" opacity="0"/>
 
-  <path id="ln-p1d0" class="ln-blue" d="M340,113 C340,136 130,140 130,159"
+  <path id="ln-p1d0" class="ln-blue" d="M340,113 C340,136 130,140 130,181"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
-  <path id="ln-p1d1" class="ln-blue" d="M340,113 L340,159"
+  <path id="ln-p1d1" class="ln-blue" d="M340,113 L340,181"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
-  <path id="ln-p1d2" class="ln-blue" d="M340,113 C340,136 550,140 550,159"
+  <path id="ln-p1d2" class="ln-blue" d="M340,113 C340,136 550,140 550,181"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
 
-  <path id="ln-p1u0" class="ln-blue" d="M130,200 C130,230 340,234 340,256"
+  <path id="ln-p1u0" class="ln-blue" d="M130,222 C130,252 340,256 340,278"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
-  <path id="ln-p1u1" class="ln-blue" d="M340,200 L340,256"
+  <path id="ln-p1u1" class="ln-blue" d="M340,222 L340,278"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
-  <path id="ln-p1u2" class="ln-blue" d="M550,200 C550,230 340,234 340,256"
+  <path id="ln-p1u2" class="ln-blue" d="M550,222 C550,252 340,256 340,278"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
 
-  <line id="ln-b" x1="340" y1="326" x2="340" y2="378"
+  <line id="ln-b" x1="340" y1="348" x2="340" y2="400"
     stroke="#0019FF" stroke-width="1" stroke-opacity="0.25" opacity="0"/>
 
-  <path id="ln-p2d0" class="ln-blue" d="M340,326 C340,354 130,358 130,378"
+  <path id="ln-p2d0" class="ln-blue" d="M340,348 C340,376 130,380 130,400"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
-  <path id="ln-p2d1" class="ln-blue" d="M340,326 L340,378"
+  <path id="ln-p2d1" class="ln-blue" d="M340,348 L340,400"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
-  <path id="ln-p2d2" class="ln-blue" d="M340,326 C340,354 550,358 550,378"
+  <path id="ln-p2d2" class="ln-blue" d="M340,348 C340,376 550,380 550,400"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
 
-  <path id="ln-p2u0" class="ln-blue" d="M130,420 C130,446 340,450 340,468"
+  <path id="ln-p2u0" class="ln-blue" d="M130,442 C130,468 340,472 340,490"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
-  <path id="ln-p2u1" class="ln-blue" d="M340,420 L340,468"
+  <path id="ln-p2u1" class="ln-blue" d="M340,442 L340,490"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
-  <path id="ln-p2u2" class="ln-blue" d="M550,420 C550,446 340,450 340,468"
+  <path id="ln-p2u2" class="ln-blue" d="M550,442 C550,468 340,472 340,490"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
 
-  <line id="ln-c" class="ln-gray" x1="340" y1="504" x2="340" y2="522"
+  <line id="ln-c" class="ln-gray" x1="340" y1="526" x2="340" y2="544"
     stroke="#d0cdc8" stroke-width="1" marker-end="url(#ah-gray-l)" opacity="0"/>
 
   <!-- ══ ARROW LABELS (appear with packets, stay) ═══════════════════════ -->
   <g id="lbl-query" opacity="0">
-    <rect class="lbl-bg" x="284" y="124" width="112" height="18" fill="rgba(255,255,255,0.92)"/>
-    <text class="t-lbl-blue" x="340" y="138" text-anchor="middle" font-size="10" fill="#0019FF">query terms</text>
+    <rect class="lbl-bg" x="284" y="146" width="112" height="18" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl-blue" x="340" y="160" text-anchor="middle" font-size="10" fill="#0019FF">query terms</text>
   </g>
   <g id="lbl-stats" opacity="0">
-    <rect class="lbl-bg" x="290" y="216" width="100" height="18" fill="rgba(255,255,255,0.92)"/>
-    <text class="t-lbl" x="340" y="230" text-anchor="middle" font-size="10" fill="rgba(87,83,78,0.7)">term statistics</text>
+    <rect class="lbl-bg" x="290" y="238" width="100" height="18" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl" x="340" y="252" text-anchor="middle" font-size="10" fill="rgba(87,83,78,0.7)">term statistics</text>
   </g>
   <g id="lbl-idf" opacity="0">
-    <rect class="lbl-bg" x="284" y="342" width="112" height="18" fill="rgba(255,255,255,0.92)"/>
-    <text class="t-lbl-blue" x="340" y="356" text-anchor="middle" font-size="10" fill="#0019FF">global statistics</text>
+    <rect class="lbl-bg" x="284" y="378" width="112" height="18" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl-blue" x="340" y="392" text-anchor="middle" font-size="10" fill="#0019FF">global statistics</text>
   </g>
   <g id="lbl-topk" opacity="0">
-    <rect class="lbl-bg" x="307" y="434" width="66" height="18" fill="rgba(255,255,255,0.92)"/>
-    <text class="t-lbl" x="340" y="448" text-anchor="middle" font-size="10" fill="rgba(87,83,78,0.7)">top-k</text>
+    <rect class="lbl-bg" x="307" y="456" width="66" height="18" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl" x="340" y="470" text-anchor="middle" font-size="10" fill="rgba(87,83,78,0.7)">top-k</text>
   </g>
 
   <!-- ══ DATA PACKETS ══════════════════════════════════════════════════════ -->
@@ -290,23 +329,27 @@
   </circle>
 
   <!-- ══ PULSE RINGS ════════════════════════════════════════════════════════ -->
-  <circle id="pu-p1-0" class="pulse" cx="130" cy="180" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
-  <circle id="pu-p1-1" class="pulse" cx="340" cy="180" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
-  <circle id="pu-p1-2" class="pulse" cx="550" cy="180" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
-  <circle id="pu-p2-0" class="pulse" cx="130" cy="400" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
-  <circle id="pu-p2-1" class="pulse" cx="340" cy="400" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
-  <circle id="pu-p2-2" class="pulse" cx="550" cy="400" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p1-0" class="pulse" cx="130" cy="202" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p1-1" class="pulse" cx="340" cy="202" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p1-2" class="pulse" cx="550" cy="202" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p2-0" class="pulse" cx="130" cy="422" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p2-1" class="pulse" cx="340" cy="422" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
+  <circle id="pu-p2-2" class="pulse" cx="550" cy="422" r="26" fill="none" stroke="#0019FF" stroke-width="1.5" opacity="0"/>
 
-  <!-- ══ PHASE DIVIDERS ════════════════════════════════════════════════════ -->
+  <!-- ══ PHASE DIVIDERS (two-line ribbons — extra vertical room for labels) ══ -->
   <g id="div-p1" opacity="0">
-    <line class="div-line" x1="32" y1="116" x2="210" y2="116" stroke="#e8e6e3" stroke-width="1"/>
-    <text class="t-div" x="218" y="121" font-size="10" fill="rgba(61,58,54,0.7)" letter-spacing="0.05em">PASS 1 — terms out · term statistics back</text>
-    <line class="div-line" x1="510" y1="116" x2="648" y2="116" stroke="#e8e6e3" stroke-width="1"/>
+    <line class="div-line" x1="32" y1="118" x2="208" y2="118" stroke="#e8e6e3" stroke-width="1"/>
+    <line class="div-line" x1="472" y1="118" x2="648" y2="118" stroke="#e8e6e3" stroke-width="1"/>
+    <text class="t-div" x="340" y="129" text-anchor="middle" font-size="9.5" fill="rgba(61,58,54,0.72)" letter-spacing="0.04em">PASS 1 — terms out · term statistics back</text>
+    <line class="div-line" x1="32" y1="138" x2="208" y2="138" stroke="#e8e6e3" stroke-width="1"/>
+    <line class="div-line" x1="472" y1="138" x2="648" y2="138" stroke="#e8e6e3" stroke-width="1"/>
   </g>
   <g id="div-p2" opacity="0">
-    <line class="div-line" x1="32" y1="332" x2="218" y2="332" stroke="#e8e6e3" stroke-width="1"/>
-    <text class="t-div" x="226" y="337" font-size="10" fill="rgba(61,58,54,0.7)" letter-spacing="0.05em">PASS 2 — global statistics out · top-k back</text>
-    <line class="div-line" x1="518" y1="332" x2="648" y2="332" stroke="#e8e6e3" stroke-width="1"/>
+    <line class="div-line" x1="32" y1="350" x2="208" y2="350" stroke="#e8e6e3" stroke-width="1"/>
+    <line class="div-line" x1="472" y1="350" x2="648" y2="350" stroke="#e8e6e3" stroke-width="1"/>
+    <text class="t-div" x="340" y="361" text-anchor="middle" font-size="9.5" fill="rgba(61,58,54,0.72)" letter-spacing="0.04em">PASS 2 — global statistics out · top-k back</text>
+    <line class="div-line" x1="32" y1="370" x2="208" y2="370" stroke="#e8e6e3" stroke-width="1"/>
+    <line class="div-line" x1="472" y1="370" x2="648" y2="370" stroke="#e8e6e3" stroke-width="1"/>
   </g>
 
   <!-- ══ NODES ═════════════════════════════════════════════════════════════ -->
@@ -327,65 +370,68 @@
 
   <!-- Slabs pass 1 -->
   <g id="nd-slabs-1" opacity="0">
-    <rect class="nd-box" x="80" y="159" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="130" y="178" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_0</text>
-    <text class="t-muted2" x="130" y="195" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">precomputed stats</text>
-    <rect class="nd-box" x="290" y="159" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="340" y="178" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_1</text>
-    <text class="t-muted2" x="340" y="195" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">precomputed stats</text>
-    <rect class="nd-box" x="500" y="159" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="550" y="178" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_2</text>
-    <text class="t-muted2" x="550" y="195" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">precomputed stats</text>
+    <rect class="nd-box" x="80" y="181" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="130" y="200" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_0</text>
+    <text class="t-muted2" x="130" y="217" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">precomputed stats</text>
+    <rect class="nd-box" x="290" y="181" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="340" y="200" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_1</text>
+    <text class="t-muted2" x="340" y="217" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">precomputed stats</text>
+    <rect class="nd-box" x="500" y="181" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="550" y="200" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_2</text>
+    <text class="t-muted2" x="550" y="217" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">precomputed stats</text>
   </g>
 
   <!-- Global BM25 stats -->
   <g id="nd-stats" opacity="0">
-    <rect class="nd-stats" x="146" y="256" width="388" height="70" fill="rgba(0,25,255,0.03)" stroke="rgba(0,25,255,0.22)" stroke-width="1.5"/>
-    <text class="t-blue" x="340" y="281" text-anchor="middle" font-size="12" fill="#0019FF" font-weight="500">merged global statistics</text>
+    <rect class="nd-stats" x="146" y="278" width="388" height="70" fill="rgba(0,25,255,0.03)" stroke="rgba(0,25,255,0.22)" stroke-width="1.5"/>
+    <text class="t-blue" x="340" y="303" text-anchor="middle" font-size="12" fill="#0019FF" font-weight="500">merged global statistics</text>
     <g id="nd-stats-fields" opacity="0">
-      <text class="t-muted" x="188" y="301" font-size="10" fill="rgba(87,83,78,0.6)">total_docs</text>
-      <text class="t-muted3" x="270" y="301" font-size="10" fill="rgba(87,83,78,0.28)">·</text>
-      <text class="t-muted" x="282" y="301" font-size="10" fill="rgba(87,83,78,0.6)">total_tokens</text>
-      <text class="t-muted3" x="370" y="301" font-size="10" fill="rgba(87,83,78,0.28)">·</text>
-      <text class="t-muted" x="382" y="301" font-size="10" fill="rgba(87,83,78,0.6)">term_doc_freqs</text>
-      <text class="t-muted2" x="340" y="317" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.4)" font-style="italic">all slabs score against the same merged statistics</text>
+      <text class="t-muted" x="188" y="323" font-size="10" fill="rgba(87,83,78,0.6)">total_docs</text>
+      <text class="t-muted3" x="270" y="323" font-size="10" fill="rgba(87,83,78,0.28)">·</text>
+      <text class="t-muted" x="282" y="323" font-size="10" fill="rgba(87,83,78,0.6)">total_tokens</text>
+      <text class="t-muted3" x="370" y="323" font-size="10" fill="rgba(87,83,78,0.28)">·</text>
+      <text class="t-muted" x="382" y="323" font-size="10" fill="rgba(87,83,78,0.6)">term_doc_freqs</text>
+      <text class="t-muted2" x="340" y="339" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.4)" font-style="italic">all slabs score against the same merged statistics</text>
     </g>
   </g>
 
   <!-- Slabs pass 2 -->
   <g id="nd-slabs-2" opacity="0">
-    <rect class="nd-box" x="80" y="378" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="130" y="398" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_0</text>
-    <text class="t-muted2" x="130" y="415" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
-    <rect class="nd-box" x="290" y="378" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="340" y="398" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_1</text>
-    <text class="t-muted2" x="340" y="415" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
-    <rect class="nd-box" x="500" y="378" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="550" y="398" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_2</text>
-    <text class="t-muted2" x="550" y="415" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
+    <rect class="nd-box" x="80" y="400" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="130" y="420" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_0</text>
+    <text class="t-muted2" x="130" y="437" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
+    <rect class="nd-box" x="290" y="400" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="340" y="420" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_1</text>
+    <text class="t-muted2" x="340" y="437" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
+    <rect class="nd-box" x="500" y="400" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="550" y="420" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_2</text>
+    <text class="t-muted2" x="550" y="437" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
   </g>
 
   <!-- Merge / results -->
   <g id="nd-results" opacity="0">
-    <rect class="nd-box" x="252" y="466" width="176" height="38" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-primary" x="340" y="484" text-anchor="middle" font-size="12" fill="#57534E" font-weight="500">merge top-k</text>
-    <text class="t-muted2" x="340" y="499" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">globally accurate BM25</text>
+    <rect class="nd-box" x="252" y="488" width="176" height="38" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-primary" x="340" y="506" text-anchor="middle" font-size="12" fill="#57534E" font-weight="500">merge top-k</text>
+    <text class="t-muted2" x="340" y="521" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">globally accurate BM25</text>
   </g>
 
   <!-- Final label -->
   <g id="nd-final" opacity="0">
-    <text class="t-muted2" x="340" y="538" text-anchor="middle" font-size="10.5"
+    <text class="t-muted2" x="340" y="560" text-anchor="middle" font-size="10.5"
       fill="rgba(87,83,78,0.5)" letter-spacing="0.04em">RANKED RESULTS → CLIENT</text>
   </g>
 
   <!-- ══ STATUS BAR ════════════════════════════════════════════════════════ -->
-  <rect class="sb-rect" x="52" y="550" width="576" height="50" fill="rgba(0,25,255,0.025)" stroke="rgba(0,25,255,0.08)" stroke-width="1"/>
-  <circle id="sb-dot1" cx="72" cy="568" r="3.5" fill="#e2e0dc"/>
-  <circle id="sb-dot2" cx="72" cy="585" r="3.5" fill="#e2e0dc"/>
-  <text id="sb-l1" class="t-sb" x="84" y="572" font-size="10" fill="rgba(87,83,78,0.7)"> </text>
-  <text id="sb-l2" class="t-sb-muted" x="84" y="589" font-size="10" fill="rgba(87,83,78,0.45)"> </text>
+  <g transform="translate(0, 36)">
+    <rect class="sb-rect" x="52" y="548" width="576" height="50" fill="rgba(0,25,255,0.018)" stroke="rgba(0,25,255,0.06)" stroke-width="1"/>
+    <circle id="sb-dot1" cx="72" cy="566" r="3" fill="#e2e0dc"/>
+    <circle id="sb-dot2" cx="72" cy="582" r="3" fill="#e2e0dc"/>
+    <text id="sb-l1" class="t-sb" x="84" y="570" font-size="8.5" fill="rgba(87,83,78,0.65)"> </text>
+    <text id="sb-l2" class="t-sb-muted" x="84" y="586" font-size="8.5" fill="rgba(87,83,78,0.42)"> </text>
+  </g>
 
 </svg>
+</div>
 </div>
 
 <script>
@@ -532,8 +578,8 @@
     await fadeIn('nd-final', 280);
     await wait(400);
 
-    status('Globally accurate BM25 — terms, aggregate stats, broadcast, top-k',
-      'naive per-slab shortcuts would skew results; corpus-wide merged statistics are required for correct BM25', 'on', 'on');
+    status('Globally accurate BM25 — terms, merged stats, broadcast, top-k',
+      'Per-slab shortcuts skew scores; corpus-wide merged statistics keep BM25 correct', 'on', 'on');
   }
 
   if (R) {
@@ -543,12 +589,12 @@
      'ln-p2d0','ln-p2d1','ln-p2d2','ln-p2u0','ln-p2u1','ln-p2u2','lbl-idf','lbl-topk',
      'nd-results','ln-c','nd-final',
     ].forEach(id => setOp(id, 1));
-    status('Globally accurate BM25 — terms, aggregate stats, broadcast, top-k',
-      'naive per-slab shortcuts would skew results; corpus-wide merged statistics are required for correct BM25','on','on');
+    status('Globally accurate BM25 — terms, merged stats, broadcast, top-k',
+      'Per-slab shortcuts skew scores; corpus-wide merged statistics keep BM25 correct','on','on');
   } else {
     new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) animate();
-    }, { threshold: 0.2 }).observe(document.querySelector('.outer'));
+    }, { threshold: 0.2 }).observe(document.querySelector('.bm25-page'));
   }
 })();
 </script>

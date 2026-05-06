@@ -71,7 +71,7 @@
       font-family: system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      height: 540px;
+      height: 556px;
       overflow: hidden;
       transition: background 0.25s, color 0.25s;
     }
@@ -89,11 +89,23 @@
       position: relative; z-index: 1;
       max-width: 480px;
       margin: 0 auto;
-      padding: 18px 20px 14px;
+      padding: 14px 20px 12px;
       height: 100%;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
+    }
+
+    .pipeline-trail {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5px;
+      line-height: 1.35;
+      color: var(--muted2);
+      text-align: center;
+      flex-shrink: 0;
+      padding: 0 4px;
+      max-height: 36px;
+      overflow-y: auto;
     }
 
     /* ── Input row ── */
@@ -170,10 +182,13 @@
     .card-divider { height: 1px; background: var(--divider); margin-bottom: 13px; transition: background 0.25s; }
 
     /* Token pills */
-    .card-tokens { display: flex; flex-wrap: wrap; gap: 6px; min-height: 52px; }
+    .card-tokens {
+      display: flex; flex-wrap: wrap; gap: 5px; align-content: flex-start;
+      min-height: 48px; max-height: 108px; overflow-y: auto;
+    }
     .token {
-      font-family: 'JetBrains Mono', monospace; font-size: 12px;
-      padding: 5px 10px; border-radius: 0;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      padding: 4px 9px; border-radius: 0;
       border: 1px solid var(--border2); color: var(--text); background: var(--token-bg);
       opacity: 0; transform: translateY(4px);
       transition: opacity 0.18s ease, transform 0.18s ease,
@@ -216,6 +231,7 @@
       aria-label="Input text" spellcheck="false"/>
     <button class="run-btn" aria-label="Run pipeline">run ▶</button>
   </div>
+  <div class="pipeline-trail">SimpleTokenizer → RemoveLongFilter(max_term_len=256) → LowerCaser → StopWordFilter → Stemmer</div>
   <div class="progress-row" aria-label="Stage progress">
     <span class="dot active"></span>
     <span class="dot"></span>
@@ -304,11 +320,13 @@
     return w;
   }
 
+  const MAX_TERM_LEN = 256;
+
   // ── Pipeline ──────────────────────────────────────────────────────────────
   function pipeline(input) {
     const raw = input.split(/[\s!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]+/).filter(Boolean);
     const s0 = raw.map(t => ({ text: t, removed: false }));
-    const s1 = s0.map(t => ({ text: t.text, removed: t.text.length > 40 }));
+    const s1 = s0.map(t => ({ text: t.text, removed: t.text.length > MAX_TERM_LEN }));
     const s2 = s1.map(t => ({ text: t.text.toLowerCase(), removed: t.removed }));
     const s3 = s2.map(t => ({ text: t.text, removed: t.removed || STOP.has(t.text) }));
     const s4 = s3.map(t => t.removed ? { text: t.text, removed: true } : { text: stem(t.text), removed: false });
@@ -327,11 +345,11 @@
   }
 
   const STAGES = [
-    { name: 'SimpleTokenizer',      desc: 'split on whitespace & punctuation' },
-    { name: 'RemoveLongFilter(40)', desc: 'drop tokens longer than 40 characters' },
-    { name: 'LowerCaser',           desc: 'normalize to lowercase' },
-    { name: 'StopWordFilter',       desc: 'remove common language stop words' },
-    { name: 'Stemmer',              desc: 'reduce tokens to their stem form' },
+    { name: 'SimpleTokenizer', desc: 'split on whitespace & punctuation' },
+    { name: 'RemoveLongFilter(max_term_len=256)', desc: 'drop tokens longer than 256 characters' },
+    { name: 'LowerCaser', desc: 'normalize to lowercase' },
+    { name: 'StopWordFilter', desc: 'remove common language stop words' },
+    { name: 'Stemmer', desc: 'reduce tokens to their stem form' },
   ];
 
   function summary(idx, tokens) {
@@ -340,7 +358,7 @@
     const kpt = tokens.filter(t => !t.removedNow).length;
     return [
       `${kpt} token${kpt!==1?'s':''} extracted`,
-      rem ? `${rem} token${rem>1?'s':''} dropped (length > 40)` : 'no tokens exceeded 40 chars',
+      rem ? `${rem} token${rem>1?'s':''} dropped (length > ${MAX_TERM_LEN})` : `no tokens exceeded ${MAX_TERM_LEN} chars`,
       chg ? `${chg} token${chg>1?'s':''} normalized to lowercase` : 'all tokens already lowercase',
       rem ? `${rem} stop word${rem>1?'s':''} removed` : 'no stop words found',
       chg ? `${chg} token${chg>1?'s':''} reduced to stem form` : 'no stems applied',
