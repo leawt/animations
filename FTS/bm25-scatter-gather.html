@@ -11,8 +11,8 @@
     /* ── Design tokens ── */
     :root {
       --bg:          #ffffff;
-      --dot:         #b8b5b0;
-      --dot-opacity: 0.4;
+      --dot:         #cac8c4;
+      --dot-opacity: 0.22;
       --text:        #3d3a36;
       --muted:       rgba(61,58,54,0.82);
       --muted2:      rgba(61,58,54,0.7);
@@ -39,7 +39,7 @@
     html.dark {
       --bg:          #0f0e0b;
       --dot:         rgba(255,255,255,1);
-      --dot-opacity: 0.07;
+      --dot-opacity: 0.045;
       --text:        #dedad5;
       --muted:       rgba(222,218,213,0.82);
       --muted2:      rgba(222,218,213,0.68);
@@ -74,7 +74,7 @@
       content: '';
       position: fixed; inset: 0;
       background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
-      background-size: 4.8px 4.8px;
+      background-size: 5.5px 5.5px;
       opacity: var(--dot-opacity);
       pointer-events: none;
     }
@@ -89,6 +89,14 @@
       width: 100%; max-width: 680px;
       height: 100%; max-height: 610px;
       display: block;
+    }
+
+    /* Knock out dots behind glyphs (matches page bg in light/dark) */
+    svg text {
+      paint-order: stroke fill;
+      stroke: var(--bg);
+      stroke-width: 2px;
+      stroke-linejoin: round;
     }
 
     /* ── SVG overrides — presentation attrs have specificity 0, any CSS rule wins ── */
@@ -139,7 +147,7 @@
   </style>
 </head>
 <body>
-<div class="outer" role="img" aria-label="BM25 scatter-gather: query terms to all slabs, term statistics back, global statistics broadcast, each slab returns top-k">
+<div class="outer" role="img" aria-label="BM25 scatter-gather: query terms to all slabs; each slab returns precomputed per-term statistics (lookup only); merged global statistics broadcast; each slab returns top-k">
 <svg viewBox="0 0 680 610"
      xmlns="http://www.w3.org/2000/svg"
      font-family="'JetBrains Mono', monospace"
@@ -166,49 +174,49 @@
     </marker>
 
     <!-- Motion paths -->
-    <path id="m-p1d0" d="M340,110 C340,136 130,140 130,160"/>
-    <path id="m-p1d1" d="M340,110 L340,160"/>
-    <path id="m-p1d2" d="M340,110 C340,136 550,140 550,160"/>
-    <path id="m-p1u0" d="M130,200 C130,230 340,234 340,258"/>
-    <path id="m-p1u1" d="M340,200 L340,258"/>
-    <path id="m-p1u2" d="M550,200 C550,230 340,234 340,258"/>
-    <path id="m-p2d0" d="M340,322 C340,356 130,360 130,380"/>
-    <path id="m-p2d1" d="M340,322 L340,380"/>
-    <path id="m-p2d2" d="M340,322 C340,356 550,360 550,380"/>
+    <path id="m-p1d0" d="M340,113 C340,136 130,140 130,159"/>
+    <path id="m-p1d1" d="M340,113 L340,159"/>
+    <path id="m-p1d2" d="M340,113 C340,136 550,140 550,159"/>
+    <path id="m-p1u0" d="M130,200 C130,230 340,234 340,256"/>
+    <path id="m-p1u1" d="M340,200 L340,256"/>
+    <path id="m-p1u2" d="M550,200 C550,230 340,234 340,256"/>
+    <path id="m-p2d0" d="M340,326 C340,354 130,358 130,378"/>
+    <path id="m-p2d1" d="M340,326 L340,378"/>
+    <path id="m-p2d2" d="M340,326 C340,354 550,358 550,378"/>
     <path id="m-p2u0" d="M130,420 C130,446 340,450 340,468"/>
     <path id="m-p2u1" d="M340,420 L340,468"/>
     <path id="m-p2u2" d="M550,420 C550,446 340,450 340,468"/>
   </defs>
 
   <!-- ══ CONNECTOR LINES ══════════════════════════════════════════════════ -->
-  <line id="ln-a" class="ln-gray" x1="340" y1="54" x2="340" y2="76"
+  <line id="ln-a" class="ln-gray" x1="340" y1="57" x2="340" y2="75"
     stroke="#d0cdc8" stroke-width="1" marker-end="url(#ah-gray-l)" opacity="0"/>
 
-  <path id="ln-p1d0" class="ln-blue" d="M340,110 C340,136 130,140 130,160"
+  <path id="ln-p1d0" class="ln-blue" d="M340,113 C340,136 130,140 130,159"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
-  <path id="ln-p1d1" class="ln-blue" d="M340,110 L340,160"
+  <path id="ln-p1d1" class="ln-blue" d="M340,113 L340,159"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
-  <path id="ln-p1d2" class="ln-blue" d="M340,110 C340,136 550,140 550,160"
+  <path id="ln-p1d2" class="ln-blue" d="M340,113 C340,136 550,140 550,159"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
 
-  <path id="ln-p1u0" class="ln-blue" d="M130,200 C130,230 340,234 340,258"
+  <path id="ln-p1u0" class="ln-blue" d="M130,200 C130,230 340,234 340,256"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
-  <path id="ln-p1u1" class="ln-blue" d="M340,200 L340,258"
+  <path id="ln-p1u1" class="ln-blue" d="M340,200 L340,256"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
-  <path id="ln-p1u2" class="ln-blue" d="M550,200 C550,230 340,234 340,258"
+  <path id="ln-p1u2" class="ln-blue" d="M550,200 C550,230 340,234 340,256"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
 
-  <line id="ln-b" x1="340" y1="322" x2="340" y2="380"
+  <line id="ln-b" x1="340" y1="326" x2="340" y2="378"
     stroke="#0019FF" stroke-width="1" stroke-opacity="0.25" opacity="0"/>
 
-  <path id="ln-p2d0" class="ln-blue" d="M340,322 C340,356 130,360 130,380"
+  <path id="ln-p2d0" class="ln-blue" d="M340,326 C340,354 130,358 130,378"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
-  <path id="ln-p2d1" class="ln-blue" d="M340,322 L340,380"
+  <path id="ln-p2d1" class="ln-blue" d="M340,326 L340,378"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
-  <path id="ln-p2d2" class="ln-blue" d="M340,322 C340,356 550,360 550,380"
+  <path id="ln-p2d2" class="ln-blue" d="M340,326 C340,354 550,358 550,378"
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18" opacity="0"/>
 
   <path id="ln-p2u0" class="ln-blue" d="M130,420 C130,446 340,450 340,468"
@@ -221,25 +229,25 @@
     fill="none" stroke="#0019FF" stroke-width="1" stroke-opacity="0.18"
     stroke-dasharray="4 3" opacity="0"/>
 
-  <line id="ln-c" class="ln-gray" x1="340" y1="502" x2="340" y2="520"
+  <line id="ln-c" class="ln-gray" x1="340" y1="504" x2="340" y2="522"
     stroke="#d0cdc8" stroke-width="1" marker-end="url(#ah-gray-l)" opacity="0"/>
 
   <!-- ══ ARROW LABELS (appear with packets, stay) ═══════════════════════ -->
   <g id="lbl-query" opacity="0">
-    <rect class="lbl-bg" x="286" y="126" width="108" height="16" fill="rgba(255,255,255,0.92)"/>
-    <text class="t-lbl-blue" x="340" y="138" text-anchor="middle" font-size="9" fill="#0019FF">query terms</text>
+    <rect class="lbl-bg" x="284" y="124" width="112" height="18" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl-blue" x="340" y="138" text-anchor="middle" font-size="10" fill="#0019FF">query terms</text>
   </g>
   <g id="lbl-stats" opacity="0">
-    <rect class="lbl-bg" x="292" y="218" width="96" height="16" fill="rgba(255,255,255,0.92)"/>
-    <text class="t-lbl" x="340" y="230" text-anchor="middle" font-size="9" fill="rgba(87,83,78,0.7)">term statistics</text>
+    <rect class="lbl-bg" x="290" y="216" width="100" height="18" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl" x="340" y="230" text-anchor="middle" font-size="10" fill="rgba(87,83,78,0.7)">term statistics</text>
   </g>
   <g id="lbl-idf" opacity="0">
-    <rect class="lbl-bg" x="286" y="344" width="108" height="16" fill="rgba(255,255,255,0.92)"/>
-    <text class="t-lbl-blue" x="340" y="356" text-anchor="middle" font-size="9" fill="#0019FF">global statistics</text>
+    <rect class="lbl-bg" x="284" y="342" width="112" height="18" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl-blue" x="340" y="356" text-anchor="middle" font-size="10" fill="#0019FF">global statistics</text>
   </g>
   <g id="lbl-topk" opacity="0">
-    <rect class="lbl-bg" x="310" y="436" width="60" height="16" fill="rgba(255,255,255,0.92)"/>
-    <text class="t-lbl" x="340" y="448" text-anchor="middle" font-size="9" fill="rgba(87,83,78,0.7)">top-k</text>
+    <rect class="lbl-bg" x="307" y="434" width="66" height="18" fill="rgba(255,255,255,0.92)"/>
+    <text class="t-lbl" x="340" y="448" text-anchor="middle" font-size="10" fill="rgba(87,83,78,0.7)">top-k</text>
   </g>
 
   <!-- ══ DATA PACKETS ══════════════════════════════════════════════════════ -->
@@ -292,12 +300,12 @@
   <!-- ══ PHASE DIVIDERS ════════════════════════════════════════════════════ -->
   <g id="div-p1" opacity="0">
     <line class="div-line" x1="32" y1="116" x2="210" y2="116" stroke="#e8e6e3" stroke-width="1"/>
-    <text class="t-div" x="218" y="120" font-size="9" fill="rgba(61,58,54,0.7)" letter-spacing="0.05em">PASS 1 — terms out · term statistics back</text>
+    <text class="t-div" x="218" y="121" font-size="10" fill="rgba(61,58,54,0.7)" letter-spacing="0.05em">PASS 1 — terms out · term statistics back</text>
     <line class="div-line" x1="510" y1="116" x2="648" y2="116" stroke="#e8e6e3" stroke-width="1"/>
   </g>
   <g id="div-p2" opacity="0">
     <line class="div-line" x1="32" y1="332" x2="218" y2="332" stroke="#e8e6e3" stroke-width="1"/>
-    <text class="t-div" x="226" y="336" font-size="9" fill="rgba(61,58,54,0.7)" letter-spacing="0.05em">PASS 2 — global statistics out · top-k back</text>
+    <text class="t-div" x="226" y="337" font-size="10" fill="rgba(61,58,54,0.7)" letter-spacing="0.05em">PASS 2 — global statistics out · top-k back</text>
     <line class="div-line" x1="518" y1="332" x2="648" y2="332" stroke="#e8e6e3" stroke-width="1"/>
   </g>
 
@@ -305,77 +313,77 @@
 
   <!-- Client -->
   <g id="nd-client" opacity="0">
-    <rect class="nd-box" x="280" y="18" width="120" height="36" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-primary" x="340" y="33" text-anchor="middle" font-size="11" fill="#57534E" font-weight="500">Client</text>
-    <text class="t-muted2" x="340" y="47" text-anchor="middle" font-size="9" fill="rgba(87,83,78,0.45)">"machine learning"</text>
+    <rect class="nd-box" x="278" y="17" width="124" height="40" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-primary" x="340" y="34" text-anchor="middle" font-size="12" fill="#57534E" font-weight="500">Client</text>
+    <text class="t-muted2" x="340" y="49" text-anchor="middle" font-size="10" fill="rgba(87,83,78,0.45)">"machine learning"</text>
   </g>
 
   <!-- Query Coordinator -->
   <g id="nd-coord" opacity="0">
-    <rect class="nd-box" x="258" y="76" width="164" height="34" fill="white" stroke="rgba(0,25,255,0.25)" stroke-width="1.2"/>
-    <text class="t-blue" x="340" y="90" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">Query Coordinator</text>
-    <text class="t-muted2" x="340" y="103" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">terms → stats → global → top-k</text>
+    <rect class="nd-box" x="256" y="75" width="168" height="38" fill="white" stroke="rgba(0,25,255,0.25)" stroke-width="1.2"/>
+    <text class="t-blue" x="340" y="91" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">Query Coordinator</text>
+    <text class="t-muted2" x="340" y="106" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">terms → stats → global → top-k</text>
   </g>
 
   <!-- Slabs pass 1 -->
   <g id="nd-slabs-1" opacity="0">
-    <rect class="nd-box" x="80" y="160" width="100" height="40" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="130" y="177" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_0</text>
-    <text class="t-muted2" x="130" y="191" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">scan segment</text>
-    <rect class="nd-box" x="290" y="160" width="100" height="40" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="340" y="177" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_1</text>
-    <text class="t-muted2" x="340" y="191" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">scan segment</text>
-    <rect class="nd-box" x="500" y="160" width="100" height="40" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="550" y="177" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_2</text>
-    <text class="t-muted2" x="550" y="191" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">scan segment</text>
+    <rect class="nd-box" x="80" y="159" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="130" y="178" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_0</text>
+    <text class="t-muted2" x="130" y="195" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">precomputed stats</text>
+    <rect class="nd-box" x="290" y="159" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="340" y="178" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_1</text>
+    <text class="t-muted2" x="340" y="195" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">precomputed stats</text>
+    <rect class="nd-box" x="500" y="159" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="550" y="178" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_2</text>
+    <text class="t-muted2" x="550" y="195" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">precomputed stats</text>
   </g>
 
   <!-- Global BM25 stats -->
   <g id="nd-stats" opacity="0">
-    <rect class="nd-stats" x="148" y="258" width="384" height="64" fill="rgba(0,25,255,0.03)" stroke="rgba(0,25,255,0.22)" stroke-width="1.5"/>
-    <text class="t-blue" x="340" y="279" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">merged global statistics</text>
+    <rect class="nd-stats" x="146" y="256" width="388" height="70" fill="rgba(0,25,255,0.03)" stroke="rgba(0,25,255,0.22)" stroke-width="1.5"/>
+    <text class="t-blue" x="340" y="281" text-anchor="middle" font-size="12" fill="#0019FF" font-weight="500">merged global statistics</text>
     <g id="nd-stats-fields" opacity="0">
-      <text class="t-muted" x="188" y="297" font-size="9" fill="rgba(87,83,78,0.6)">total_docs</text>
-      <text class="t-muted3" x="270" y="297" font-size="9" fill="rgba(87,83,78,0.28)">·</text>
-      <text class="t-muted" x="282" y="297" font-size="9" fill="rgba(87,83,78,0.6)">total_tokens</text>
-      <text class="t-muted3" x="370" y="297" font-size="9" fill="rgba(87,83,78,0.28)">·</text>
-      <text class="t-muted" x="382" y="297" font-size="9" fill="rgba(87,83,78,0.6)">term_doc_freqs</text>
-      <text class="t-muted2" x="340" y="313" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.4)" font-style="italic">all shards score against the same IDF</text>
+      <text class="t-muted" x="188" y="301" font-size="10" fill="rgba(87,83,78,0.6)">total_docs</text>
+      <text class="t-muted3" x="270" y="301" font-size="10" fill="rgba(87,83,78,0.28)">·</text>
+      <text class="t-muted" x="282" y="301" font-size="10" fill="rgba(87,83,78,0.6)">total_tokens</text>
+      <text class="t-muted3" x="370" y="301" font-size="10" fill="rgba(87,83,78,0.28)">·</text>
+      <text class="t-muted" x="382" y="301" font-size="10" fill="rgba(87,83,78,0.6)">term_doc_freqs</text>
+      <text class="t-muted2" x="340" y="317" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.4)" font-style="italic">all slabs score against the same merged statistics</text>
     </g>
   </g>
 
   <!-- Slabs pass 2 -->
   <g id="nd-slabs-2" opacity="0">
-    <rect class="nd-box" x="80" y="380" width="100" height="40" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="130" y="397" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_0</text>
-    <text class="t-muted2" x="130" y="411" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
-    <rect class="nd-box" x="290" y="380" width="100" height="40" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="340" y="397" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_1</text>
-    <text class="t-muted2" x="340" y="411" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
-    <rect class="nd-box" x="500" y="380" width="100" height="40" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-blue" x="550" y="397" text-anchor="middle" font-size="10" fill="#0019FF" font-weight="500">slab_2</text>
-    <text class="t-muted2" x="550" y="411" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
+    <rect class="nd-box" x="80" y="378" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="130" y="398" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_0</text>
+    <text class="t-muted2" x="130" y="415" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
+    <rect class="nd-box" x="290" y="378" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="340" y="398" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_1</text>
+    <text class="t-muted2" x="340" y="415" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
+    <rect class="nd-box" x="500" y="378" width="100" height="43" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-blue" x="550" y="398" text-anchor="middle" font-size="11" fill="#0019FF" font-weight="500">slab_2</text>
+    <text class="t-muted2" x="550" y="415" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">score &amp; rank</text>
   </g>
 
   <!-- Merge / results -->
   <g id="nd-results" opacity="0">
-    <rect class="nd-box" x="254" y="468" width="172" height="34" fill="white" stroke="#e2e0dc" stroke-width="1"/>
-    <text class="t-primary" x="340" y="483" text-anchor="middle" font-size="11" fill="#57534E" font-weight="500">merge top-k</text>
-    <text class="t-muted2" x="340" y="496" text-anchor="middle" font-size="8.5" fill="rgba(87,83,78,0.45)">globally accurate BM25</text>
+    <rect class="nd-box" x="252" y="466" width="176" height="38" fill="white" stroke="#e2e0dc" stroke-width="1"/>
+    <text class="t-primary" x="340" y="484" text-anchor="middle" font-size="12" fill="#57534E" font-weight="500">merge top-k</text>
+    <text class="t-muted2" x="340" y="499" text-anchor="middle" font-size="9.5" fill="rgba(87,83,78,0.45)">globally accurate BM25</text>
   </g>
 
   <!-- Final label -->
   <g id="nd-final" opacity="0">
-    <text class="t-muted2" x="340" y="536" text-anchor="middle" font-size="9.5"
+    <text class="t-muted2" x="340" y="538" text-anchor="middle" font-size="10.5"
       fill="rgba(87,83,78,0.5)" letter-spacing="0.04em">RANKED RESULTS → CLIENT</text>
   </g>
 
   <!-- ══ STATUS BAR ════════════════════════════════════════════════════════ -->
-  <rect class="sb-rect" x="52" y="552" width="576" height="46" fill="rgba(0,25,255,0.025)" stroke="rgba(0,25,255,0.08)" stroke-width="1"/>
-  <circle id="sb-dot1" cx="72" cy="567" r="3.5" fill="#e2e0dc"/>
-  <circle id="sb-dot2" cx="72" cy="583" r="3.5" fill="#e2e0dc"/>
-  <text id="sb-l1" class="t-sb" x="84" y="570" font-size="9" fill="rgba(87,83,78,0.7)"> </text>
-  <text id="sb-l2" class="t-sb-muted" x="84" y="586" font-size="9" fill="rgba(87,83,78,0.45)"> </text>
+  <rect class="sb-rect" x="52" y="550" width="576" height="50" fill="rgba(0,25,255,0.025)" stroke="rgba(0,25,255,0.08)" stroke-width="1"/>
+  <circle id="sb-dot1" cx="72" cy="568" r="3.5" fill="#e2e0dc"/>
+  <circle id="sb-dot2" cx="72" cy="585" r="3.5" fill="#e2e0dc"/>
+  <text id="sb-l1" class="t-sb" x="84" y="572" font-size="10" fill="rgba(87,83,78,0.7)"> </text>
+  <text id="sb-l2" class="t-sb-muted" x="84" y="589" font-size="10" fill="rgba(87,83,78,0.45)"> </text>
 
 </svg>
 </div>
@@ -485,7 +493,7 @@
     await fadeIn('nd-coord', 300); await wait(500);
 
     await fadeIn('div-p1', 250); await wait(300);
-    status('Pass 1: small message — query terms — to every slab', 'same term list reaches all shards at once');
+    status('Pass 1: small message — query terms — to every slab', 'each slab returns stored per-term stats for those terms — precomputed in the slab, no scanning');
     await wait(800);
     await fanOut(['pk-p1d0','pk-p1d1','pk-p1d2'],['am-p1d0','am-p1d1','am-p1d2'],['ln-p1d0','ln-p1d1','ln-p1d2'],'lbl-query');
 
@@ -493,7 +501,7 @@
     await pulse(['pu-p1-0','pu-p1-1','pu-p1-2']);
 
     await wait(600);
-    status('Every slab returns term statistics', 'local df, counts, and postings summaries for the query terms');
+    status('Every slab returns term statistics', 'aggregates for the query terms are already materialized — fast retrieval per slab');
     await wait(800);
     await fanOut(['pk-p1u0','pk-p1u1','pk-p1u2'],['am-p1u0','am-p1u1','am-p1u2'],['ln-p1u0','ln-p1u1','ln-p1u2'],'lbl-stats');
 
@@ -506,7 +514,7 @@
     await wait(900);
     setOp('ln-b', 1); await wait(200);
     await fadeIn('div-p2', 250); await wait(350);
-    status('Pass 2: broadcast global statistics to all slabs', 'every shard scores with the same merged BM25 parameters');
+    status('Pass 2: broadcast global statistics to all slabs', 'every slab scores with the same merged BM25 parameters');
     await wait(800);
     await fanOut(['pk-p2d0','pk-p2d1','pk-p2d2'],['am-p2d0','am-p2d1','am-p2d2'],['ln-p2d0','ln-p2d1','ln-p2d2'],'lbl-idf');
 
@@ -525,7 +533,7 @@
     await wait(400);
 
     status('Globally accurate BM25 — terms, aggregate stats, broadcast, top-k',
-      'without the gather pass, IDF would disagree across shards', 'on', 'on');
+      'naive per-slab shortcuts would skew results; corpus-wide merged statistics are required for correct BM25', 'on', 'on');
   }
 
   if (R) {
@@ -536,7 +544,7 @@
      'nd-results','ln-c','nd-final',
     ].forEach(id => setOp(id, 1));
     status('Globally accurate BM25 — terms, aggregate stats, broadcast, top-k',
-      'without the gather pass, IDF would disagree across shards','on','on');
+      'naive per-slab shortcuts would skew results; corpus-wide merged statistics are required for correct BM25','on','on');
   } else {
     new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) animate();

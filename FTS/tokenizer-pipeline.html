@@ -71,7 +71,7 @@
       font-family: system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      height: 520px;
+      height: 540px;
       overflow: hidden;
       transition: background 0.25s, color 0.25s;
     }
@@ -100,20 +100,20 @@
     .input-row { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .input-label {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px; color: var(--muted); flex-shrink: 0;
+      font-size: 11px; color: var(--muted); flex-shrink: 0;
     }
     .input-field {
       flex: 1; min-width: 0;
-      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
       color: var(--text); border: 1px solid var(--border); border-radius: 0;
-      padding: 6px 10px; outline: none; background: var(--input-bg);
+      padding: 7px 11px; outline: none; background: var(--input-bg);
       transition: border-color 0.15s, background 0.25s, color 0.25s;
     }
     .input-field:focus { border-color: var(--blue-focus); }
     .run-btn {
-      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
       color: var(--blue); border: 1px solid var(--blue-btn); border-radius: 0;
-      padding: 6px 11px; background: transparent; cursor: pointer; flex-shrink: 0;
+      padding: 7px 12px; background: transparent; cursor: pointer; flex-shrink: 0;
       transition: background 0.15s, color 0.25s, border-color 0.25s;
     }
     .run-btn:hover { background: var(--blue-bg); }
@@ -157,23 +157,23 @@
     /* Card internals */
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
     .card-name {
-      font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500;
-      color: var(--blue); display: flex; align-items: center; gap: 7px;
+      font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500;
+      color: var(--blue); display: flex; align-items: center; gap: 8px;
       transition: color 0.25s;
     }
     .card-name::before {
-      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      content: ''; width: 8px; height: 8px; border-radius: 50%;
       background: var(--blue); flex-shrink: 0; transition: background 0.25s;
     }
-    .card-num { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted2); padding-top: 2px; }
-    .card-desc { font-size: 11px; color: var(--muted); margin-bottom: 13px; padding-left: 14px; }
+    .card-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted2); padding-top: 2px; }
+    .card-desc { font-size: 12px; color: var(--muted); margin-bottom: 13px; padding-left: 15px; }
     .card-divider { height: 1px; background: var(--divider); margin-bottom: 13px; transition: background 0.25s; }
 
     /* Token pills */
-    .card-tokens { display: flex; flex-wrap: wrap; gap: 6px; min-height: 48px; }
+    .card-tokens { display: flex; flex-wrap: wrap; gap: 6px; min-height: 52px; }
     .token {
-      font-family: 'JetBrains Mono', monospace; font-size: 11px;
-      padding: 4px 9px; border-radius: 0;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      padding: 5px 10px; border-radius: 0;
       border: 1px solid var(--border2); color: var(--text); background: var(--token-bg);
       opacity: 0; transform: translateY(4px);
       transition: opacity 0.18s ease, transform 0.18s ease,
@@ -182,20 +182,20 @@
     .token.show { opacity: 1; transform: translateY(0); }
     .token.changed { color: var(--blue); background: var(--blue-bg); border-color: var(--blue-border); }
     .token.removed { color: var(--removed-text); background: transparent; border-color: transparent; text-decoration: line-through; }
-    .card-summary { margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted2); }
+    .card-summary { margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted2); }
     .card-summary::before { content: '→ '; }
 
     /* ── Output row ── */
     .output-row {
       display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-      flex-shrink: 0; min-height: 26px; opacity: 0;
+      flex-shrink: 0; min-height: 28px; opacity: 0;
       transition: opacity 0.4s ease;
     }
     .output-row.visible { opacity: 1; }
-    .output-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); }
+    .output-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
     .output-chip {
-      font-family: 'JetBrains Mono', monospace; font-size: 10px;
-      padding: 3px 9px; border-radius: 0;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      padding: 4px 10px; border-radius: 0;
       background: var(--chip-bg); color: var(--chip-text);
       transition: background 0.25s;
     }
@@ -371,7 +371,7 @@
     cardDesc.textContent = m.desc;
     cardSum.textContent  = summary(idx, tokens);
     const dot = document.createElement('span');
-    dot.style.cssText = 'display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-right:7px;';
+    dot.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-right:8px;';
     cardName.prepend(dot);
     tokenList.innerHTML = '';
     dots.forEach((d,i) => { d.classList.toggle('active', i===idx); d.classList.toggle('done', i<idx); });
